@@ -40,13 +40,11 @@ func main() {
 		panic(err)
 	}
 
-	lines := strings.Split(string(dat), "\n")
+	lines := strings.Split(strings.TrimSpace(string(dat)), "\n")
 	var values []int
 	for _, line := range lines {
-		if line != "" {
-			val, _ := strconv.Atoi(line)
-			values = append(values, val)
-		}
+		val, _ := strconv.Atoi(line)
+		values = append(values, val)
 	}
 	part1(values)
 	part2(values)
