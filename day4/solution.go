@@ -42,30 +42,19 @@ func (p passport) isValid() bool {
 	hgtUnit := p.hgt[len(p.hgt)-2:]
 	var hgtUnitValid bool
 	var hgtValValid bool
-	if hgtUnit == "cm" {
+	if hgtUnit == "cm" || hgtUnit == "in" {
 		hgtUnitValid = true
-		cms, err := strconv.Atoi(p.hgt[:len(p.hgt)-2])
-		if err == nil {
-			hgtValValid = cms >= 150 && cms <= 193
-		}
-	} else if hgtUnit == "in" {
-		hgtUnitValid = true
-		ins, err := strconv.Atoi(p.hgt[:len(p.hgt)-2])
-		if err == nil {
-			hgtValValid = ins >= 59 && ins <= 76
-		}
+		val, _ := strconv.Atoi(p.hgt[:len(p.hgt)-2])
+		hgtValValid = (hgtUnit == "cm" && val >= 150 && val <= 193) || (hgtUnit == "in" && val >= 59 && val <= 76)
 	}
 
 	hgtValid := hgtUnitValid && hgtValValid
 
-	hclMatch, _ := regexp.MatchString("#[0-9a-f]{6}", p.hcl)
-	hclValid := len(p.hcl) == 7 && hclMatch
+	hclValid, _ := regexp.MatchString("^#[0-9a-f]{6}$", p.hcl)
 
-	eclMatch, _ := regexp.MatchString("amb|blu|brn|gry|grn|hzl|oth", p.ecl)
-	eclValid := len(p.ecl) == 3 && eclMatch
+	eclValid, _ := regexp.MatchString("^amb|blu|brn|gry|grn|hzl|oth$", p.ecl)
 
-	pidMatch, _ := regexp.MatchString("[0-9]{9}", p.pid)
-	pidValid := len(p.pid) == 9 && pidMatch
+	pidValid, _ := regexp.MatchString("^[0-9]{9}$", p.pid)
 
 	return byrValid && iyrValid && eyrValid && hgtValid && hclValid && eclValid && pidValid
 }
