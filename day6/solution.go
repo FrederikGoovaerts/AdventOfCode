@@ -19,7 +19,7 @@ func main() {
 		answers := make(map[string]int, 0)
 		appended := strings.ReplaceAll(group, "\n", "")
 		for _, answer := range appended {
-			answers[string(answer)] += 1
+			answers[string(answer)]++
 		}
 		answerList = append(answerList, answers)
 		peopleCount = append(peopleCount, len(strings.Split(group, "\n")))
