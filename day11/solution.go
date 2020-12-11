@@ -36,7 +36,7 @@ func stringifySeating(seats map[int]struct{}) string {
 	return result
 }
 
-func adjacentSeatNeighbors(s seat) []seat {
+func adjacentSeatNeighbors(s seat, seats map[seat]struct{}, dist int) []seat {
 	return []seat{
 		{s.x - 1, s.y - 1},
 		{s.x - 1, s.y},
@@ -47,24 +47,6 @@ func adjacentSeatNeighbors(s seat) []seat {
 		{s.x + 1, s.y},
 		{s.x + 1, s.y + 1},
 	}
-}
-
-func performAdjacentIteration(seats map[seat]struct{}, seatTaken map[int]struct{}) map[int]struct{} {
-	newSeats := make(map[int]struct{}, 0)
-	for seat := range seats {
-		_, taken := seatTaken[intifySeat(seat)]
-		neighborsTaken := 0
-		for _, neighbor := range adjacentSeatNeighbors(seat) {
-			_, neighborTaken := seatTaken[intifySeat(neighbor)]
-			if neighborTaken {
-				neighborsTaken++
-			}
-		}
-		if (taken && neighborsTaken < 4) || !taken && neighborsTaken == 0 {
-			newSeats[intifySeat(seat)] = struct{}{}
-		}
-	}
-	return newSeats
 }
 
 type change struct {
@@ -99,18 +81,18 @@ func viewSeatNeighbors(s seat, seats map[seat]struct{}, dist int) []seat {
 	return neighbors
 }
 
-func performViewIteration(seats map[seat]struct{}, seatTaken map[int]struct{}, maxDist int) map[int]struct{} {
+func performIteration(seats map[seat]struct{}, seatTaken map[int]struct{}, maxDist int, neighborThreshold int, seatNeighbors func(seat, map[seat]struct{}, int) []seat) map[int]struct{} {
 	newSeats := make(map[int]struct{}, 0)
 	for seat := range seats {
 		_, taken := seatTaken[intifySeat(seat)]
 		neighborsTaken := 0
-		for _, neighbor := range viewSeatNeighbors(seat, seats, maxDist) {
+		for _, neighbor := range seatNeighbors(seat, seats, maxDist) {
 			_, neighborTaken := seatTaken[intifySeat(neighbor)]
 			if neighborTaken {
 				neighborsTaken++
 			}
 		}
-		if (taken && neighborsTaken < 5) || !taken && neighborsTaken == 0 {
+		if (taken && neighborsTaken < neighborThreshold) || !taken && neighborsTaken == 0 {
 			newSeats[intifySeat(seat)] = struct{}{}
 		}
 	}
@@ -127,7 +109,7 @@ func main() {
 	maxDist := max(len(lines), len(lines[0]))
 
 	seats := make(map[seat]struct{}, 0)
-	seatTaken := make(map[int]struct{}, 0)
+	originalSeatTaken := make(map[int]struct{}, 0)
 
 	for y, line := range lines {
 		for x, char := range line {
@@ -135,10 +117,14 @@ func main() {
 				seat := seat{x, y}
 				seats[seat] = struct{}{}
 				if char == '#' {
-					seatTaken[intifySeat(seat)] = struct{}{}
+					originalSeatTaken[intifySeat(seat)] = struct{}{}
 				}
 			}
 		}
+	}
+	seatTaken := make(map[int]struct{}, 0)
+	for k, v := range originalSeatTaken {
+		seatTaken[k] = v
 	}
 
 	visited := make(map[string]struct{})
@@ -146,7 +132,7 @@ func main() {
 	iteration := 0
 	looped := false
 	for !looped {
-		seatTaken = performAdjacentIteration(seats, seatTaken)
+		seatTaken = performIteration(seats, seatTaken, maxDist, 4, adjacentSeatNeighbors)
 		iteration++
 		seatString := stringifySeating(seatTaken)
 		_, found := visited[seatString]
@@ -160,17 +146,8 @@ func main() {
 	fmt.Println(len(seatTaken))
 
 	seatTaken = make(map[int]struct{}, 0)
-
-	for y, line := range lines {
-		for x, char := range line {
-			if char != '.' {
-				seat := seat{x, y}
-				seats[seat] = struct{}{}
-				if char == '#' {
-					seatTaken[intifySeat(seat)] = struct{}{}
-				}
-			}
-		}
+	for k, v := range originalSeatTaken {
+		seatTaken[k] = v
 	}
 
 	visited = make(map[string]struct{})
@@ -178,7 +155,7 @@ func main() {
 	iteration = 0
 	looped = false
 	for !looped {
-		seatTaken = performViewIteration(seats, seatTaken, maxDist)
+		seatTaken = performIteration(seats, seatTaken, maxDist, 5, viewSeatNeighbors)
 		iteration++
 		seatString := stringifySeating(seatTaken)
 		_, found := visited[seatString]
