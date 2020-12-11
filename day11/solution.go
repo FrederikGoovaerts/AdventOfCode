@@ -122,50 +122,38 @@ func main() {
 			}
 		}
 	}
-	seatTaken := make(map[int]struct{}, 0)
-	for k, v := range originalSeatTaken {
-		seatTaken[k] = v
+
+	options := []struct {
+		a int
+		b func(seat, map[seat]struct{}, int) []seat
+	}{
+		{4, adjacentSeatNeighbors},
+		{5, viewSeatNeighbors},
 	}
 
-	visited := make(map[string]struct{})
-	visited[stringifySeating(seatTaken)] = struct{}{}
-	iteration := 0
-	looped := false
-	for !looped {
-		seatTaken = performIteration(seats, seatTaken, maxDist, 4, adjacentSeatNeighbors)
-		iteration++
-		seatString := stringifySeating(seatTaken)
-		_, found := visited[seatString]
-		if found {
-			looped = true
-		} else {
-			visited[seatString] = struct{}{}
+	for _, option := range options {
+
+		seatTaken := make(map[int]struct{}, 0)
+		for k, v := range originalSeatTaken {
+			seatTaken[k] = v
 		}
-	}
 
-	fmt.Println(len(seatTaken))
-
-	seatTaken = make(map[int]struct{}, 0)
-	for k, v := range originalSeatTaken {
-		seatTaken[k] = v
-	}
-
-	visited = make(map[string]struct{})
-	visited[stringifySeating(seatTaken)] = struct{}{}
-	iteration = 0
-	looped = false
-	for !looped {
-		seatTaken = performIteration(seats, seatTaken, maxDist, 5, viewSeatNeighbors)
-		iteration++
-		seatString := stringifySeating(seatTaken)
-		_, found := visited[seatString]
-		if found {
-			looped = true
-		} else {
-			visited[seatString] = struct{}{}
+		visited := make(map[string]struct{})
+		visited[stringifySeating(seatTaken)] = struct{}{}
+		iteration := 0
+		looped := false
+		for !looped {
+			seatTaken = performIteration(seats, seatTaken, maxDist, option.a, option.b)
+			iteration++
+			seatString := stringifySeating(seatTaken)
+			_, found := visited[seatString]
+			if found {
+				looped = true
+			} else {
+				visited[seatString] = struct{}{}
+			}
 		}
+
+		fmt.Println(len(seatTaken))
 	}
-
-	fmt.Println(len(seatTaken))
-
 }
