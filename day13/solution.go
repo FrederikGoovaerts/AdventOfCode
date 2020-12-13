@@ -18,8 +18,32 @@ type coincidence struct {
 	occurence int
 }
 
+func min(a int, b int) int {
+	if a > b {
+		return b
+	}
+	return a
+}
+
+func findSync(xPeriod int, xOffset int, yPeriod int, yOffset int) (int, int) {
+	initialOffset := min(xOffset, yOffset)
+	normXOff := xOffset - initialOffset
+	normYOff := yOffset - initialOffset
+	currX := normXOff + xPeriod
+	found := false
+	for !found {
+		isSync := (currX-normYOff)%yPeriod == 0
+		if isSync {
+			found = true
+		} else {
+			currX += xPeriod
+		}
+	}
+	return (xPeriod * yPeriod), currX + initialOffset
+}
+
 func main() {
-	dat, err := ioutil.ReadFile("ex2")
+	dat, err := ioutil.ReadFile("input")
 	if err != nil {
 		panic(err)
 	}
@@ -44,36 +68,14 @@ func main() {
 	bus, _ := strconv.Atoi(lowestBus)
 	fmt.Println(lowest * bus)
 
-	coincidences := make([]coincidence, 0)
-	firstBus, _ := strconv.Atoi(busses[0])
+	currentPeriod, _ := strconv.Atoi(busses[0])
+	currentOffset := 0
 	for i := 1; i < len(busses); i++ {
 		if busses[i] != "x" {
-			otherBus, _ := strconv.Atoi(busses[i])
-			for j := 1; j < firstBus*otherBus; j++ {
-				if (j%firstBus == 0) && (j%otherBus == i) {
-					coincidences = append(coincidences, coincidence{firstBus * otherBus, j})
-				}
-			}
+			nextPeriod, _ := strconv.Atoi(busses[i])
+			currentPeriod, currentOffset = findSync(currentPeriod, currentOffset, nextPeriod, i)
 		}
 	}
-	fmt.Println(coincidences)
-	for len(coincidences) > 1 {
-		newCoincidences := make([]coincidence, 0)
-		first := coincidences[0]
-		for i := 1; i < len(coincidences); i++ {
-			second := coincidences[i]
-			matched := false
-			curr := first.occurence
-			for !matched {
-				if curr%second.interval == (second.interval - second.occurence) {
-					matched = true
-					newCoincidences = append(newCoincidences, coincidence{first.interval * second.interval, curr})
-				} else {
-					curr += first.interval
-				}
-			}
-		}
-		coincidences = newCoincidences
-	}
-	fmt.Println(coincidences[0])
+	fmt.Println(currentPeriod - currentOffset)
+
 }
