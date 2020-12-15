@@ -27,30 +27,21 @@ func main() {
 	}
 	delete(turnMap, lastNum)
 
-	for turnCounter < 2020 {
-		turnCounter++
-		lastTurn, seen := turnMap[lastNum]
-		turnMap[lastNum] = turnCounter - 1
-		if !seen || lastTurn == turnCounter-1 {
-			lastNum = 0
-		} else {
-			lastNum = turnCounter - lastTurn - 1
+	requested := [2]int{2020, 30000000}
+
+	for _, req := range requested {
+		for turnCounter < req {
+			turnCounter++
+			lastTurn, seen := turnMap[lastNum]
+			turnMap[lastNum] = turnCounter - 1
+			if !seen || lastTurn == turnCounter-1 {
+				lastNum = 0
+			} else {
+				lastNum = turnCounter - lastTurn - 1
+			}
+	
 		}
-
+		fmt.Println(lastNum)
 	}
-	fmt.Println(lastNum)
-
-	for turnCounter < 30000000 {
-		turnCounter++
-		lastTurn, seen := turnMap[lastNum]
-		turnMap[lastNum] = turnCounter - 1
-		if !seen || lastTurn == turnCounter-1 {
-			lastNum = 0
-		} else {
-			lastNum = turnCounter - lastTurn - 1
-		}
-
-	}
-	fmt.Println(lastNum)
 
 }
