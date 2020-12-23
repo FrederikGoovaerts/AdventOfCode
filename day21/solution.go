@@ -1,25 +1,17 @@
 package main
 
 import (
+	"aoc/utils"
 	"fmt"
 	"io/ioutil"
 	"sort"
 	"strings"
 )
 
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
 func getPossibleTranslations(input [][]string, previousTranslations []string) []string {
 	curr := make([]string, 0)
 	for _, el := range input[0] {
-		if !contains(previousTranslations, el) {
+		if !utils.ContainsString(previousTranslations, el) {
 			curr = append(curr, el)
 		}
 	}
@@ -27,7 +19,7 @@ func getPossibleTranslations(input [][]string, previousTranslations []string) []
 		ingredients := input[i]
 		newCurr := make([]string, 0)
 		for _, el := range curr {
-			if contains(ingredients, el) && !contains(previousTranslations, el) {
+			if utils.ContainsString(ingredients, el) && !utils.ContainsString(previousTranslations, el) {
 				newCurr = append(newCurr, el)
 			}
 		}
@@ -79,7 +71,7 @@ func main() {
 
 	count := 0
 	for _, ing := range ingredients {
-		if !contains(translatedSet, ing) {
+		if !utils.ContainsString(translatedSet, ing) {
 			count++
 		}
 	}

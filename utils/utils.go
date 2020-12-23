@@ -8,3 +8,23 @@ func Reverse(s string) string {
 	}
 	return string(runes)
 }
+
+// ContainsString checks whether given array contains given string
+func ContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// ContainsInt checks whether given array contains given int
+func ContainsInt(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
