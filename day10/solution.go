@@ -36,7 +36,8 @@ func part1(ops []Op) int {
 	return result
 }
 
-func part2(ops []Op) {
+func part2(ops []Op) string {
+	result := ""
 	drawing := make([]bool, len(ops))
 	x := 0
 
@@ -53,13 +54,15 @@ func part2(ops []Op) {
 	for row := 0; row < 6; row++ {
 		for index := 0; index < 40; index++ {
 			if drawing[row*40+index] {
-				fmt.Print("#")
+				result += "#"
 			} else {
-				fmt.Print(".")
+				result += "."
 			}
 		}
-		fmt.Println()
+		result += "\n"
 	}
+
+	return result
 }
 
 func main() {
@@ -88,6 +91,6 @@ func main() {
 	}
 
 	fmt.Println(part1(ops))
-	part2(ops)
+	fmt.Println(part2(ops))
 
 }
