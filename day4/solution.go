@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -53,12 +53,7 @@ func part2(pairs []Pair) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
-
-	lines := strings.Split(strings.TrimSpace(string(dat)), "\n")
+	lines := util.FileAsLines("input")
 	pairs := []Pair{}
 
 	for _, line := range lines {

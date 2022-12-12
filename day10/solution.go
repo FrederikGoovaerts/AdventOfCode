@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -66,13 +66,8 @@ func part2(ops []Op) string {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
+	lines := util.FileAsLines("input")
 	ops := make([]Op, 0)
-
-	lines := strings.Split(string(dat), "\n")
 
 	for _, line := range lines {
 		if line != "" {
@@ -92,5 +87,4 @@ func main() {
 
 	fmt.Println(part1(ops))
 	fmt.Println(part2(ops))
-
 }

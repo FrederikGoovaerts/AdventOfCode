@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -41,8 +41,6 @@ import (
 // 	fmt.Println()
 // }
 
-var empty = struct{}{}
-
 func abs(x int) int {
 	if x < 0 {
 		return -x
@@ -63,7 +61,7 @@ type Move struct {
 
 func addTailLocation(x int, y int, locations *map[string]struct{}) {
 	location := fmt.Sprint(x) + " " + fmt.Sprint(y)
-	(*locations)[location] = empty
+	(*locations)[location] = util.EMPTY_STRUCT
 }
 
 func getHeadMove(direction string) (int, int) {
@@ -108,13 +106,8 @@ func solve(moves []Move, ropeLength int) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
+	lines := util.FileAsLines("input")
 	moves := make([]Move, 0)
-
-	lines := strings.Split(string(dat), "\n")
 
 	for _, line := range lines {
 		if line != "" {

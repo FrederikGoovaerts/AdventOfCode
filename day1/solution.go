@@ -1,11 +1,10 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 func part1(elves []Elf) {
@@ -41,12 +40,8 @@ func (e Elf) totalCalories() int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
+	lines := util.FileAsLines("input")
 
-	lines := strings.Split(strings.TrimSpace(string(dat)), "\n")
 	calories := make([]int, 0)
 	elves := []Elf{}
 

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -169,13 +169,8 @@ func part2(f Forest) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
+	lines := util.FileAsLines("input")
 	forest := Forest{make([][]int, 0)}
-
-	lines := strings.Split(string(dat), "\n")
 
 	for _, line := range lines {
 		if line != "" {

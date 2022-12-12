@@ -1,9 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
-	"strings"
 )
 
 func priority(a rune) int {
@@ -77,12 +76,7 @@ func part2(packs []Pack) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
-
-	lines := strings.Split(strings.TrimSpace(string(dat)), "\n")
+	lines := util.FileAsLines("input")
 	packs := []Pack{}
 
 	for _, line := range lines {

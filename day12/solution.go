@@ -1,14 +1,9 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
-	"strings"
 )
-
-var empty = struct{}{}
-
-const MaxInt = int(^uint(0) >> 1)
 
 type Coord struct {
 	x  int
@@ -70,12 +65,12 @@ func dijk(board Board, start Coord, finishCheck func(coord Coord) bool, flippedN
 	prev := make(map[Coord]Coord)
 	unvisited := make(map[Coord]struct{})
 	for _, coord := range board.getCoords() {
-		unvisited[coord] = empty
+		unvisited[coord] = util.EMPTY_STRUCT
 	}
 
 	for len(unvisited) > 0 {
 		u := Coord{}
-		uDist := MaxInt
+		uDist := util.MAX_INT
 		for coord := range unvisited {
 			unvisDist, ok := dist[coord]
 
@@ -104,15 +99,11 @@ func dijk(board Board, start Coord, finishCheck func(coord Coord) bool, flippedN
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
+	lines := util.FileAsLines("input")
+
 	start := Coord{}
 	end := Coord{}
 	board := new(Board)
-
-	lines := strings.Split(string(dat), "\n")
 
 	for yC, line := range lines {
 		row := make([]Coord, len(line))

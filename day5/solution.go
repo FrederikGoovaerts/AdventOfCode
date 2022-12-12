@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -62,12 +62,8 @@ func part2(stacks []Stack, moves []Move) string {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
+	lines := util.FileAsLines("input")
 
-	lines := strings.Split(string(dat), "\n")
 	// We build the internal data twice to not resort to weird deep copy logic
 	stacksPart1 := []Stack{}
 	stacksPart2 := []Stack{}

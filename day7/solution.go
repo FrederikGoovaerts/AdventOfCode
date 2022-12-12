@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,8 +10,6 @@ import (
 
 const DISK_SPACE = 70000000
 const UPDATE_SIZE = 30000000
-
-const MAX_INT = int(^uint(0) >> 1)
 
 type Node struct {
 	dir bool
@@ -61,7 +59,7 @@ func part1(root Node) int {
 func checkDelete(node Node, deleteSize int) (int, int) {
 	childSizes := make([]int, 0)
 	size := 0
-	lowest := MAX_INT
+	lowest := util.MAX_INT
 	for _, child := range *node.children {
 		if child.dir {
 			childSize, lowestInChild := checkDelete(child, deleteSize)
@@ -93,12 +91,7 @@ func part2(root Node) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
-
-	lines := strings.Split(string(dat), "\n")
+	lines := util.FileAsLines("input")
 	dir := make([]string, 0)
 	root := Node{true, 0, newNodeMapPointer()}
 

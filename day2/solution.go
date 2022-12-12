@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc/util"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -84,12 +84,7 @@ func getPart2Score(rounds []Round) int {
 }
 
 func main() {
-	dat, err := os.ReadFile("input")
-	if err != nil {
-		panic(err)
-	}
-
-	lines := strings.Split(strings.TrimSpace(string(dat)), "\n")
+	lines := util.FileAsLines("input")
 	rounds := []Round{}
 
 	for _, line := range lines {
