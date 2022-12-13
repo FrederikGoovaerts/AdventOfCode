@@ -6,7 +6,7 @@ import (
 )
 
 func FileAsLines(fileName string) []string {
-	dat, err := os.ReadFile("input")
+	dat, err := os.ReadFile(fileName)
 	if err != nil {
 		panic(err)
 	}
