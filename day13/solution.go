@@ -3,6 +3,7 @@ package main
 import (
 	"aoc/util"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -82,9 +83,35 @@ func part1(packets []Packet) int {
 	for i := 0; i < len(packets); i += 2 {
 		if areSorted(packets[i], packets[i+1]) <= 0 {
 			result += (i / 2) + 1
-			// fmt.Println((i/2)+1, "sorted")
 		}
 	}
+	return result
+}
+
+type SortablePacketArray []Packet
+
+func (a SortablePacketArray) Len() int           { return len(a) }
+func (a SortablePacketArray) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a SortablePacketArray) Less(i, j int) bool { return areSorted(a[i], a[j]) < 0 }
+
+var dividerTwo = Packet{true, []Packet{{true, []Packet{{false, []Packet{}, 2}}, 0}}, 0}
+var dividerSix = Packet{true, []Packet{{true, []Packet{{false, []Packet{}, 6}}, 0}}, 0}
+
+func part2(originalPackets []Packet) int {
+	packets := make([]Packet, 0)
+	packets = append(packets, originalPackets...)
+	packets = append(packets, dividerTwo, dividerSix)
+
+	sort.Sort(SortablePacketArray(packets))
+
+	result := 1
+	for id, pack := range packets {
+		// Abuse sorted logic to check equality
+		if areSorted(pack, dividerTwo) == 0 || areSorted(pack, dividerSix) == 0 {
+			result *= (id + 1)
+		}
+	}
+
 	return result
 }
 
@@ -100,8 +127,6 @@ func main() {
 		}
 	}
 
-	// for _, pack := range packets {
-	// 	fmt.Println(pack)
-	// }
 	fmt.Println(part1(packets))
+	fmt.Println(part2(packets))
 }
