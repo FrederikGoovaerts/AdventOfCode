@@ -41,19 +41,6 @@ import (
 // 	fmt.Println()
 // }
 
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-func clampToOne(x int) int {
-	if x != 0 {
-		return x / abs(x)
-	}
-	return x
-}
-
 type Move struct {
 	direction string
 	distance  int
@@ -92,9 +79,9 @@ func solve(moves []Move, ropeLength int) int {
 			ropeY[0] += yDiff
 			// Drag tails
 			for i := 1; i < ropeLength; i++ {
-				if abs(ropeX[i]-ropeX[i-1]) > 1 || abs(ropeY[i]-ropeY[i-1]) > 1 {
-					ropeX[i] += clampToOne(ropeX[i-1] - ropeX[i])
-					ropeY[i] += clampToOne(ropeY[i-1] - ropeY[i])
+				if util.Abs(ropeX[i]-ropeX[i-1]) > 1 || util.Abs(ropeY[i]-ropeY[i-1]) > 1 {
+					ropeX[i] += util.ClampToOne(ropeX[i-1] - ropeX[i])
+					ropeY[i] += util.ClampToOne(ropeY[i-1] - ropeY[i])
 				}
 			}
 			// Note tail location
