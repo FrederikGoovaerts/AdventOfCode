@@ -23,15 +23,19 @@ type Cave map[string]CaveFilling
 func (c *Cave) inputPlugged() bool {
 	return (*c)[serialize(500, 0)] == Sand
 }
-func (c *Cave) dropSand(bedrock int) (string, bool) {
+
+func (c *Cave) dropSand(bedrock int, bedrockIsFloor bool) (string, bool) {
 	x := 500
 	y := 0
 	moved := true
 	for moved {
 		if y >= bedrock {
-			return "", true
-		}
-		if _, occupied := (*c)[serialize(x, y+1)]; !occupied {
+			if bedrockIsFloor {
+				moved = false
+			} else {
+				return "", true
+			}
+		} else if _, occupied := (*c)[serialize(x, y+1)]; !occupied {
 			y++
 		} else if _, occupied := (*c)[serialize(x-1, y+1)]; !occupied {
 			y++
@@ -52,11 +56,20 @@ func part1(cave Cave, bedrock int) int {
 	done := false
 	iteration := 0
 	for !cave.inputPlugged() && !done {
-		_, doneThisRound := cave.dropSand(bedrock)
+		_, doneThisRound := cave.dropSand(bedrock, false)
 		done = doneThisRound
 		iteration++
 	}
 	return iteration - 1
+}
+
+func part2(cave Cave, bedrock int) int {
+	iteration := 0
+	for !cave.inputPlugged() {
+		cave.dropSand(bedrock, true)
+		iteration++
+	}
+	return iteration
 }
 
 func getLineCoord(in string) (int, int) {
@@ -105,5 +118,9 @@ func main() {
 		}
 	}
 
-	fmt.Println(part1(cave, bedrock))
+	part1Res := part1(cave, bedrock)
+	fmt.Println(part1Res)
+	// We could run this on a clean copy of the cave, but the part1 steps would be done the same way
+	part2Res := part2(cave, bedrock)
+	fmt.Println(part1Res + part2Res)
 }
