@@ -3,6 +3,7 @@ package main
 import (
 	"aoc/util"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -59,7 +60,7 @@ func part1(root Node) int {
 func checkDelete(node Node, deleteSize int) (int, int) {
 	childSizes := make([]int, 0)
 	size := 0
-	lowest := util.MAX_INT
+	lowest := math.MaxInt
 	for _, child := range *node.children {
 		if child.dir {
 			childSize, lowestInChild := checkDelete(child, deleteSize)

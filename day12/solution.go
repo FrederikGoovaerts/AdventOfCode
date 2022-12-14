@@ -3,6 +3,7 @@ package main
 import (
 	"aoc/util"
 	"fmt"
+	"math"
 )
 
 type Coord struct {
@@ -70,7 +71,7 @@ func dijk(board Board, start Coord, finishCheck func(coord Coord) bool, flippedN
 
 	for len(unvisited) > 0 {
 		u := Coord{}
-		uDist := util.MAX_INT
+		uDist := math.MaxInt
 		for coord := range unvisited {
 			unvisDist, ok := dist[coord]
 
