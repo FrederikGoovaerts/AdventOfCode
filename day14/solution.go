@@ -14,14 +14,10 @@ const (
 	Sand CaveFilling = 1
 )
 
-func serialize(x int, y int) string {
-	return fmt.Sprint(x) + " " + fmt.Sprint(y)
-}
-
 type Cave map[string]CaveFilling
 
 func (c *Cave) inputPlugged() bool {
-	return (*c)[serialize(500, 0)] == Sand
+	return (*c)[util.SerializeCoord(500, 0)] == Sand
 }
 
 func (c *Cave) dropSand(bedrock int, bedrockIsFloor bool) (string, bool) {
@@ -35,19 +31,19 @@ func (c *Cave) dropSand(bedrock int, bedrockIsFloor bool) (string, bool) {
 			} else {
 				return "", true
 			}
-		} else if _, occupied := (*c)[serialize(x, y+1)]; !occupied {
+		} else if _, occupied := (*c)[util.SerializeCoord(x, y+1)]; !occupied {
 			y++
-		} else if _, occupied := (*c)[serialize(x-1, y+1)]; !occupied {
+		} else if _, occupied := (*c)[util.SerializeCoord(x-1, y+1)]; !occupied {
 			y++
 			x--
-		} else if _, occupied := (*c)[serialize(x+1, y+1)]; !occupied {
+		} else if _, occupied := (*c)[util.SerializeCoord(x+1, y+1)]; !occupied {
 			y++
 			x++
 		} else {
 			moved = false
 		}
 	}
-	loc := serialize(x, y)
+	loc := util.SerializeCoord(x, y)
 	(*c)[loc] = Sand
 	return loc, false
 }
@@ -92,19 +88,19 @@ func main() {
 				endX, endY := getLineCoord(linePoints[i+1])
 				if startY < endY {
 					for y := startY; y <= endY; y++ {
-						cave[serialize(startX, y)] = Rock
+						cave[util.SerializeCoord(startX, y)] = Rock
 					}
 				} else if startY > endY {
 					for y := startY; y >= endY; y-- {
-						cave[serialize(startX, y)] = Rock
+						cave[util.SerializeCoord(startX, y)] = Rock
 					}
 				} else if startX < endX {
 					for x := startX; x <= endX; x++ {
-						cave[serialize(x, startY)] = Rock
+						cave[util.SerializeCoord(x, startY)] = Rock
 					}
 				} else {
 					for x := startX; x >= endX; x-- {
-						cave[serialize(x, startY)] = Rock
+						cave[util.SerializeCoord(x, startY)] = Rock
 					}
 				}
 
