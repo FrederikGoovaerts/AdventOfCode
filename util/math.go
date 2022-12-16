@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -21,7 +20,7 @@ func ClampToOne(x int) int {
 }
 
 func SerializeCoord(x int, y int) string {
-	return fmt.Sprint(x) + " " + fmt.Sprint(y)
+	return Serialize(x, y)
 }
 
 func DeserializeCoord(ser string) (int, int) {
