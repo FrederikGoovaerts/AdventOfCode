@@ -16,6 +16,8 @@ type Valve struct {
 
 var valveRegex = regexp.MustCompile("^Valve (.*) has flow rate=(.*); tunnels? leads? to valves? (.*)$")
 
+const IDLE_DEST = "IDLE"
+
 func parse(lines []string) []Valve {
 	valves := make([]Valve, 0, len(lines))
 	for _, line := range lines {
@@ -29,10 +31,12 @@ func parse(lines []string) []Valve {
 }
 
 type State struct {
-	valve    string
-	timeLeft int
-	score    int
-	unopened []string
+	dest           string
+	timeToDestOpen int
+	currentRate    int
+	score          int
+	timeLeft       int
+	unopened       []string
 }
 
 func getNonZeroValveNames(valves []Valve) []string {
@@ -55,30 +59,7 @@ func getNonZeroValveRates(valves []Valve) map[string]int {
 	return result
 }
 
-func step(state State, dist map[string]int, rates map[string]int) []State {
-	result := make([]State, 0, len(state.unopened))
-
-	for _, next := range state.unopened {
-		newTimeLeft := state.timeLeft - (dist[util.Serialize(state.valve, next)] + 1) // distance traveled in minutes and one extra minute to open the valve
-		if newTimeLeft >= 0 {
-			rate := rates[next]
-			score := state.score + newTimeLeft*rate
-			unopened := util.Remove(state.unopened, next)
-			if len(unopened) == 0 {
-				result = append(result, State{next, 0, score, unopened})
-			} else {
-				result = append(result, State{next, newTimeLeft, score, unopened})
-			}
-		} else {
-			result = append(result, State{next, 0, state.score, state.unopened})
-		}
-	}
-
-	return result
-}
-
-func part1(valves []Valve) int {
-	// baby's first Floyd-Warshall
+func getValveDistances(valves []Valve) map[string]int {
 	dist := make(map[string]int, len(valves)*len(valves))
 	for _, v1 := range valves {
 		for _, v2 := range valves {
@@ -104,12 +85,43 @@ func part1(valves []Valve) int {
 			}
 		}
 	}
+	return dist
+}
 
+func step(state State, dist map[string]int, rates map[string]int) []State {
+	result := make([]State, 0, len(state.unopened))
+	if state.timeToDestOpen == 0 {
+		if len(state.unopened) > 0 && state.dest != IDLE_DEST {
+			for _, next := range state.unopened {
+				timeToNextOpen := dist[util.Serialize(state.dest, next)]
+
+				result = append(result, State{
+					next,
+					timeToNextOpen,
+					state.currentRate + rates[state.dest],
+					state.score + state.currentRate,
+					state.timeLeft - 1,
+					util.Remove(state.unopened, next),
+				})
+			}
+		} else {
+			return []State{{IDLE_DEST, 100, state.currentRate + rates[state.dest], state.score + state.currentRate, state.timeLeft - 1, state.unopened}}
+		}
+	} else {
+		return []State{{state.dest, state.timeToDestOpen - 1, state.currentRate, state.score + state.currentRate, state.timeLeft - 1, state.unopened}}
+	}
+
+	return result
+}
+
+func part1(valves []Valve) int {
 	result := 0
 
+	dist := getValveDistances(valves)
 	valveNames := getNonZeroValveNames(valves)
 	valveRates := getNonZeroValveRates(valves)
-	states := []State{{"AA", 30, 0, valveNames}}
+
+	states := []State{{"AA", 0, 0, 0, 31, valveNames}}
 
 	for len(states) > 0 {
 		curr := states[0]
