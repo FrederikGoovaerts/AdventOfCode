@@ -2,7 +2,7 @@ package util
 
 import "fmt"
 
-func Serialize[T int | string](x T, y T) string {
+func Serialize(x any, y any) string {
 	return fmt.Sprint(x) + " " + fmt.Sprint(y)
 }
 
