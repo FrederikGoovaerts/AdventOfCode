@@ -8,9 +8,6 @@ import (
 	"strings"
 )
 
-// To make life easier, hardcode the amount of stacks
-const NB_STACK = 9
-
 type Stack struct {
 	crates []string
 }
@@ -33,6 +30,47 @@ type Move struct {
 	amount int
 	from   int
 	to     int
+}
+
+// To make life easier, hardcode the amount of stacks
+func parse(lines []string, nbStacks int) ([]Stack, []Move) {
+	stacks := []Stack{}
+	moves := []Move{}
+
+	for i := 0; i < nbStacks; i++ {
+		stacks = append(stacks, Stack{})
+	}
+
+	readMovesMode := false
+	for _, line := range lines {
+		if line == "" {
+			continue
+		} else if strings.HasPrefix(line, " 1") {
+			readMovesMode = true
+		} else if !readMovesMode {
+			startSpacingRegex := regexp.MustCompile(`^    `)
+			otherSpacingRegex := regexp.MustCompile(`    `)
+			startFixed := startSpacingRegex.ReplaceAllString(line, "--- ")
+			fixed := otherSpacingRegex.ReplaceAllString(startFixed, " ---")
+
+			crates := strings.Split(fixed, " ")
+			for i := 0; i < nbStacks; i++ {
+				crate := crates[i]
+				if crate != "---" {
+					stacks[i].addToBottom(crate)
+				}
+			}
+		} else {
+			r, _ := regexp.Compile("move (.*) from (.*) to (.*)")
+			match := r.FindStringSubmatch(line)
+			amount, _ := strconv.Atoi(match[1])
+			from, _ := strconv.Atoi(match[2])
+			to, _ := strconv.Atoi(match[3])
+			moves = append(moves, Move{amount, from, to})
+		}
+	}
+
+	return stacks, moves
 }
 
 func part1(stacks []Stack, moves []Move) string {
@@ -62,48 +100,12 @@ func part2(stacks []Stack, moves []Move) string {
 }
 
 func main() {
+	// lines := util.FileAsLines("ex1")
 	lines := util.FileAsLines("input")
 
-	// We build the internal data twice to not resort to weird deep copy logic
-	stacksPart1 := []Stack{}
-	stacksPart2 := []Stack{}
-
-	moves := []Move{}
-	for i := 0; i < NB_STACK; i++ {
-		stacksPart1 = append(stacksPart1, Stack{})
-		stacksPart2 = append(stacksPart2, Stack{})
-	}
-
-	readMovesMode := false
-	for _, line := range lines {
-		if line == "" {
-			continue
-		} else if strings.HasPrefix(line, " 1") {
-			readMovesMode = true
-		} else if !readMovesMode {
-			startSpacingRegex := regexp.MustCompile(`^    `)
-			otherSpacingRegex := regexp.MustCompile(`    `)
-			startFixed := startSpacingRegex.ReplaceAllString(line, "--- ")
-			fixed := otherSpacingRegex.ReplaceAllString(startFixed, " ---")
-
-			crates := strings.Split(fixed, " ")
-			for i := 0; i < NB_STACK; i++ {
-				crate := crates[i]
-				if crate != "---" {
-					stacksPart1[i].addToBottom(crate)
-					stacksPart2[i].addToBottom(crate)
-				}
-			}
-		} else {
-			r, _ := regexp.Compile("move (.*) from (.*) to (.*)")
-			match := r.FindStringSubmatch(line)
-			amount, _ := strconv.Atoi(match[1])
-			from, _ := strconv.Atoi(match[2])
-			to, _ := strconv.Atoi(match[3])
-			moves = append(moves, Move{amount, from, to})
-		}
-	}
-
+	stacksPart1, moves := parse(lines, 9)
 	fmt.Println(part1(stacksPart1, moves))
+
+	stacksPart2, _ := parse(lines, 9)
 	fmt.Println(part2(stacksPart2, moves))
 }

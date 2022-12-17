@@ -33,6 +33,25 @@ func (p Pair) overlaps() bool {
 	return p.first.overlaps(p.second) || p.second.overlaps(p.first)
 }
 
+func parse(lines []string) []Pair {
+	pairs := []Pair{}
+
+	for _, line := range lines {
+		if line != "" {
+			pairStrings := strings.Split(line, ",")
+			pair1String := strings.Split(pairStrings[0], "-")
+			pair1First, _ := strconv.Atoi(pair1String[0])
+			pair1Second, _ := strconv.Atoi(pair1String[1])
+			pair2String := strings.Split(pairStrings[1], "-")
+			pair2First, _ := strconv.Atoi(pair2String[0])
+			pair2Second, _ := strconv.Atoi(pair2String[1])
+			pairs = append(pairs, Pair{Section{pair1First, pair1Second}, Section{pair2First, pair2Second}})
+		}
+	}
+
+	return pairs
+}
+
 func part1(pairs []Pair) int {
 	result := 0
 	for _, pair := range pairs {
@@ -54,20 +73,8 @@ func part2(pairs []Pair) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	pairs := []Pair{}
+	pairs := parse(lines)
 
-	for _, line := range lines {
-		if line != "" {
-			pairStrings := strings.Split(line, ",")
-			pair1String := strings.Split(pairStrings[0], "-")
-			pair1First, _ := strconv.Atoi(pair1String[0])
-			pair1Second, _ := strconv.Atoi(pair1String[1])
-			pair2String := strings.Split(pairStrings[1], "-")
-			pair2First, _ := strconv.Atoi(pair2String[0])
-			pair2Second, _ := strconv.Atoi(pair2String[1])
-			pairs = append(pairs, Pair{Section{pair1First, pair1Second}, Section{pair2First, pair2Second}})
-		}
-	}
 	fmt.Println(part1(pairs))
 	fmt.Println(part2(pairs))
 }

@@ -11,6 +11,20 @@ type Round struct {
 	second string
 }
 
+func parse(lines []string) []Round {
+	rounds := []Round{}
+
+	for _, line := range lines {
+		if line != "" {
+			splitLine := strings.Split(line, " ")
+			round := Round{splitLine[0], splitLine[1]}
+			rounds = append(rounds, round)
+		}
+	}
+
+	return rounds
+}
+
 func winsTo(choice string) string {
 	if choice == "A" {
 		return "Y"
@@ -56,7 +70,7 @@ func battleScore(round Round) int {
 	return 3
 }
 
-func getPart1Score(rounds []Round) int {
+func part1(rounds []Round) int {
 	score := 0
 	for _, round := range rounds {
 		score += choiceScore(round) + battleScore(round)
@@ -74,7 +88,7 @@ func transformRound(round Round) Round {
 	return Round{round.first, losesTo(round.first)}
 }
 
-func getPart2Score(rounds []Round) int {
+func part2(rounds []Round) int {
 	score := 0
 	for _, round := range rounds {
 		updatedRound := transformRound(round)
@@ -85,15 +99,8 @@ func getPart2Score(rounds []Round) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	rounds := []Round{}
+	rounds := parse(lines)
 
-	for _, line := range lines {
-		if line != "" {
-			splitLine := strings.Split(line, " ")
-			round := Round{splitLine[0], splitLine[1]}
-			rounds = append(rounds, round)
-		}
-	}
-	fmt.Println(getPart1Score(rounds))
-	fmt.Println(getPart2Score(rounds))
+	fmt.Println(part1(rounds))
+	fmt.Println(part2(rounds))
 }

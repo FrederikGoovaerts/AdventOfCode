@@ -34,6 +34,39 @@ func newNodeMapPointer() *map[string]Node {
 	return &result
 }
 
+func parse(lines []string) Node {
+	root := Node{true, 0, newNodeMapPointer()}
+	dir := make([]string, 0)
+
+	cdRegex := regexp.MustCompile(`^\$ cd (.*)`)
+	dirRegex := regexp.MustCompile(`^dir (.*)`)
+
+	for _, line := range lines {
+		if line == "$ ls" {
+			continue
+		}
+
+		if line == "$ cd /" {
+			dir = make([]string, 0)
+		} else if line == "$ cd .." {
+			dir = dir[0 : len(dir)-1]
+		} else if cdRegex.MatchString(line) {
+			dirName := cdRegex.FindStringSubmatch(line)[1]
+			dir = append(dir, dirName)
+		} else if dirRegex.MatchString(line) {
+			dirName := dirRegex.FindStringSubmatch(line)[1]
+			curr := root.getChildAt(dir)
+			(*curr.children)[dirName] = Node{true, 0, newNodeMapPointer()}
+		} else {
+			parts := strings.Split(line, " ")
+			size, _ := strconv.Atoi(parts[0])
+			curr := root.getChildAt(dir)
+			(*curr.children)[parts[1]] = Node{false, size, nil}
+		}
+	}
+	return root
+}
+
 func collect(n Node) (int, int) {
 	size := 0
 	score := 0
@@ -93,35 +126,7 @@ func part2(root Node) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	dir := make([]string, 0)
-	root := Node{true, 0, newNodeMapPointer()}
-
-	cdRegex := regexp.MustCompile(`^\$ cd (.*)`)
-	dirRegex := regexp.MustCompile(`^dir (.*)`)
-
-	for _, line := range lines {
-		if line == "$ ls" {
-			continue
-		}
-
-		if line == "$ cd /" {
-			dir = make([]string, 0)
-		} else if line == "$ cd .." {
-			dir = dir[0 : len(dir)-1]
-		} else if cdRegex.MatchString(line) {
-			dirName := cdRegex.FindStringSubmatch(line)[1]
-			dir = append(dir, dirName)
-		} else if dirRegex.MatchString(line) {
-			dirName := dirRegex.FindStringSubmatch(line)[1]
-			curr := root.getChildAt(dir)
-			(*curr.children)[dirName] = Node{true, 0, newNodeMapPointer()}
-		} else {
-			parts := strings.Split(line, " ")
-			size, _ := strconv.Atoi(parts[0])
-			curr := root.getChildAt(dir)
-			(*curr.children)[parts[1]] = Node{false, size, nil}
-		}
-	}
+	root := parse(lines)
 
 	fmt.Println(part1(root))
 	fmt.Println(part2(root))

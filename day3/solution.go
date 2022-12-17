@@ -37,6 +37,17 @@ func (p Pack) getDuplicate() rune {
 	panic("No duplicate found.")
 }
 
+func parse(lines []string) []Pack {
+	packs := []Pack{}
+
+	for _, line := range lines {
+		if line != "" {
+			packs = append(packs, Pack{line})
+		}
+	}
+	return packs
+}
+
 func getBadge(pack1 Pack, pack2 Pack, pack3 Pack) rune {
 	for _, ref := range pack1.contents {
 		inPack2 := false
@@ -77,13 +88,8 @@ func part2(packs []Pack) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	packs := []Pack{}
+	packs := parse(lines)
 
-	for _, line := range lines {
-		if line != "" {
-			packs = append(packs, Pack{line})
-		}
-	}
 	fmt.Println(part1(packs))
 	fmt.Println(part2(packs))
 }

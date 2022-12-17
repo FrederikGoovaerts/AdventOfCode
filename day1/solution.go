@@ -34,7 +34,7 @@ func parse(line string) []Elf {
 	return elves
 }
 
-func part1(elves []Elf) {
+func part1(elves []Elf) int {
 	curr := 0
 	for _, elf := range elves {
 		cal := elf.totalCalories()
@@ -42,16 +42,16 @@ func part1(elves []Elf) {
 			curr = cal
 		}
 	}
-	fmt.Println(curr)
+	return curr
 }
 
-func part2(elves []Elf) {
+func part2(elves []Elf) int {
 	calories := make([]int, len(elves))
 	for index, elf := range elves {
 		calories[index] = elf.totalCalories()
 	}
 	sort.Ints(calories)
-	fmt.Println(calories[len(elves)-1] + calories[len(elves)-2] + calories[len(elves)-3])
+	return calories[len(elves)-1] + calories[len(elves)-2] + calories[len(elves)-3]
 }
 
 func main() {
@@ -60,6 +60,6 @@ func main() {
 
 	elves := parse(line)
 
-	part1(elves)
-	part2(elves)
+	fmt.Println(part1(elves))
+	fmt.Println(part2(elves))
 }
