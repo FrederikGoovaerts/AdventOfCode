@@ -5,7 +5,34 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 )
+
+type Elf struct {
+	calories []int
+}
+
+func (e Elf) totalCalories() int {
+	calories := 0
+	for _, v := range e.calories {
+		calories += v
+	}
+	return calories
+}
+
+func parse(line string) []Elf {
+	elves := []Elf{}
+
+	for _, pack := range strings.Split(line, "\n\n") {
+		calories := make([]int, 0)
+		for _, cal := range strings.Split(pack, "\n") {
+			val, _ := strconv.Atoi(cal)
+			calories = append(calories, val)
+		}
+		elves = append(elves, Elf{calories})
+	}
+	return elves
+}
 
 func part1(elves []Elf) {
 	curr := 0
@@ -27,34 +54,12 @@ func part2(elves []Elf) {
 	fmt.Println(calories[len(elves)-1] + calories[len(elves)-2] + calories[len(elves)-3])
 }
 
-type Elf struct {
-	calories []int
-}
-
-func (e Elf) totalCalories() int {
-	calories := 0
-	for _, v := range e.calories {
-		calories += v
-	}
-	return calories
-}
-
 func main() {
-	lines := util.FileAsLines("input")
+	// line := util.FileAsString("ex1")
+	line := util.FileAsString("input")
 
-	calories := make([]int, 0)
-	elves := []Elf{}
+	elves := parse(line)
 
-	for _, line := range lines {
-		if line == "" {
-			elf := Elf{calories}
-			elves = append(elves, elf)
-			calories = make([]int, 0)
-		} else {
-			val, _ := strconv.Atoi(line)
-			calories = append(calories, val)
-		}
-	}
 	part1(elves)
 	part2(elves)
 }
