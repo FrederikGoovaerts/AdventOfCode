@@ -15,10 +15,10 @@ func Contains[T int | string](list []T, search T) bool {
 	return false
 }
 
-func Remove[T int | string](list []T, search T) []T {
+func Remove[T int | string](list []T, search ...T) []T {
 	result := make([]T, 0)
 	for _, el := range list {
-		if el != search {
+		if !Contains(search, el) {
 			result = append(result, el)
 		}
 	}
