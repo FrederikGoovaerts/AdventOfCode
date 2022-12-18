@@ -126,7 +126,7 @@ func stepDuo(loc1 string, free1 int, loc2 string, free2 int, score int, dist map
 
 			newScore := score
 
-			if activate <= 27 {
+			if activate <= 26 {
 				newScore += rates[util.Serialize(dest, 26-activate)]
 			}
 
@@ -156,7 +156,7 @@ func stepDuo(loc1 string, free1 int, loc2 string, free2 int, score int, dist map
 
 			newScore := score
 
-			if activate <= 27 {
+			if activate <= 26 {
 				newScore += rates[util.Serialize(dest, 26-activate)]
 			}
 
