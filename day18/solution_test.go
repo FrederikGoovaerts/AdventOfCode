@@ -7,6 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBoundsSurface(t *testing.T) {
+	bounds := Bounds{0, 1, 2, 3, 6, 8}
+	assert.Equal(t, 188, bounds.surface())
+}
+
 func TestPart1Example(t *testing.T) {
 	lines := util.FileAsLines("ex1")
 	result := part1(parse(lines))

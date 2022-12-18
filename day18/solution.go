@@ -48,7 +48,12 @@ func (b *Bounds) isOutOfBounds(cube util.Coord3) bool {
 	return cube.X < b.minX || cube.X > b.maxX || cube.Y < b.minY || cube.Y > b.maxY || cube.Z < b.minZ || cube.Z > b.maxZ
 }
 
-func floodFill(coord util.Coord3, bounds Bounds, droplet util.StringSet) util.StringSet {
+func (b *Bounds) surface() int {
+	// The coordinates represent squares with a size of 1x1x1, not discrete points, hence the +1's
+	return 2 * ((b.maxX-b.minX+1)*(b.maxY-b.minY+1) + (b.maxX-b.minX+1)*(b.maxZ-b.minZ+1) + (b.maxZ-b.minZ+1)*(b.maxY-b.minY+1))
+}
+
+func floodFillOuter(coord util.Coord3, bounds Bounds, droplet util.StringSet) util.StringSet {
 	filled := make(util.StringSet)
 	filled[util.SerializeCoord3(coord)] = util.EMPTY_STRUCT
 	curr := coord
@@ -58,12 +63,9 @@ func floodFill(coord util.Coord3, bounds Bounds, droplet util.StringSet) util.St
 		curr, next = next[0], next[1:]
 		for _, n := range curr.GetNeighbors() {
 			serN := util.SerializeCoord3(n)
-			if bounds.isOutOfBounds(n) {
-				return make(util.StringSet)
-			}
 			_, alreadyFilled := filled[serN]
 			_, inDroplet := droplet[serN]
-			if !alreadyFilled && !inDroplet {
+			if !bounds.isOutOfBounds(n) && !alreadyFilled && !inDroplet {
 				filled[serN] = util.EMPTY_STRUCT
 				next = append(next, n)
 			}
@@ -93,18 +95,16 @@ func part2(cubes util.StringSet) int {
 		bounds.maxZ = util.MaxInt(bounds.maxZ, cube.Z)
 	}
 
-	for x := bounds.minX; x <= bounds.maxX; x++ {
-		for y := bounds.minY; y <= bounds.maxY; y++ {
-			for z := bounds.minZ; z <= bounds.maxZ; z++ {
-				filledCubes := floodFill(util.Coord3{X: x, Y: y, Z: z}, bounds, cubes)
-				for filledCube := range filledCubes {
-					cubes[filledCube] = util.EMPTY_STRUCT
-				}
-			}
-		}
-	}
+	bounds.minX--
+	bounds.minY--
+	bounds.minZ--
+	bounds.maxX++
+	bounds.maxY++
+	bounds.maxZ++
 
-	result := part1(cubes)
+	outer := floodFillOuter(util.Coord3{X: bounds.minX, Y: bounds.minY, Z: bounds.minZ}, bounds, cubes)
+
+	result := part1(outer) - bounds.surface()
 
 	return result
 }
