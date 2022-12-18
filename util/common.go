@@ -2,8 +2,12 @@ package util
 
 import "fmt"
 
-func Serialize(x any, y any) string {
-	return fmt.Sprint(x) + " " + fmt.Sprint(y)
+func Serialize(items ...any) string {
+	result := fmt.Sprint(items[0])
+	for i := 1; i < len(items); i++ {
+		result += " " + fmt.Sprint(items[i])
+	}
+	return result
 }
 
 func Contains[T int | string](list []T, search T) bool {
