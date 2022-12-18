@@ -20,6 +20,47 @@ func (c *Cave) inputPlugged() bool {
 	return (*c)[util.SerializeCoord(500, 0)] == Sand
 }
 
+func parse(lines []string) (map[string]CaveFilling, int) {
+	cave := Cave(make(map[string]CaveFilling))
+	bedrock := 0
+
+	for _, line := range lines {
+		if line != "" {
+			linePoints := strings.Split(line, " -> ")
+			for i := 0; i < len(linePoints)-1; i++ {
+				startX, startY := getLineCoord(linePoints[i])
+				endX, endY := getLineCoord(linePoints[i+1])
+				if startY < endY {
+					for y := startY; y <= endY; y++ {
+						cave[util.SerializeCoord(startX, y)] = Rock
+					}
+				} else if startY > endY {
+					for y := startY; y >= endY; y-- {
+						cave[util.SerializeCoord(startX, y)] = Rock
+					}
+				} else if startX < endX {
+					for x := startX; x <= endX; x++ {
+						cave[util.SerializeCoord(x, startY)] = Rock
+					}
+				} else {
+					for x := startX; x >= endX; x-- {
+						cave[util.SerializeCoord(x, startY)] = Rock
+					}
+				}
+
+				if startY+1 > bedrock {
+					bedrock = startY + 1
+				}
+				if endY+1 > bedrock {
+					bedrock = endY + 1
+				}
+			}
+		}
+	}
+
+	return cave, bedrock
+}
+
 func (c *Cave) dropSand(bedrock int, bedrockIsFloor bool) (string, bool) {
 	x := 500
 	y := 0
@@ -77,42 +118,7 @@ func getLineCoord(in string) (int, int) {
 
 func main() {
 	lines := util.FileAsLines("input")
-	cave := Cave(make(map[string]CaveFilling))
-	bedrock := 0
-
-	for _, line := range lines {
-		if line != "" {
-			linePoints := strings.Split(line, " -> ")
-			for i := 0; i < len(linePoints)-1; i++ {
-				startX, startY := getLineCoord(linePoints[i])
-				endX, endY := getLineCoord(linePoints[i+1])
-				if startY < endY {
-					for y := startY; y <= endY; y++ {
-						cave[util.SerializeCoord(startX, y)] = Rock
-					}
-				} else if startY > endY {
-					for y := startY; y >= endY; y-- {
-						cave[util.SerializeCoord(startX, y)] = Rock
-					}
-				} else if startX < endX {
-					for x := startX; x <= endX; x++ {
-						cave[util.SerializeCoord(x, startY)] = Rock
-					}
-				} else {
-					for x := startX; x >= endX; x-- {
-						cave[util.SerializeCoord(x, startY)] = Rock
-					}
-				}
-
-				if startY+1 > bedrock {
-					bedrock = startY + 1
-				}
-				if endY+1 > bedrock {
-					bedrock = endY + 1
-				}
-			}
-		}
-	}
+	cave, bedrock := parse(lines)
 
 	part1Res := part1(cave, bedrock)
 	fmt.Println(part1Res)
