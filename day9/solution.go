@@ -46,6 +46,19 @@ type Move struct {
 	distance  int
 }
 
+func parse(lines []string) []Move {
+	moves := make([]Move, 0)
+
+	for _, line := range lines {
+		if line != "" {
+			parts := strings.Split(line, " ")
+			distance, _ := strconv.Atoi(parts[1])
+			moves = append(moves, Move{parts[0], distance})
+		}
+	}
+	return moves
+}
+
 func addTailLocation(x int, y int, locations *map[string]struct{}) {
 	location := fmt.Sprint(x) + " " + fmt.Sprint(y)
 	(*locations)[location] = util.EMPTY_STRUCT
@@ -94,15 +107,7 @@ func solve(moves []Move, ropeLength int) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	moves := make([]Move, 0)
-
-	for _, line := range lines {
-		if line != "" {
-			parts := strings.Split(line, " ")
-			distance, _ := strconv.Atoi(parts[1])
-			moves = append(moves, Move{parts[0], distance})
-		}
-	}
+	moves := parse(lines)
 
 	fmt.Println(solve(moves, 2))
 	fmt.Println(solve(moves, 10))

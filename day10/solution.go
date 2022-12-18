@@ -14,6 +14,27 @@ type Op struct {
 	value   int
 }
 
+func parse(lines []string) []Op {
+	ops := make([]Op, 0)
+
+	for _, line := range lines {
+		if line != "" {
+			parts := strings.Split(line, " ")
+			switch parts[0] {
+			case "addx":
+				value, _ := strconv.Atoi(parts[1])
+
+				ops = append(ops, noop)
+				ops = append(ops, Op{"add", value})
+			case "noop":
+				ops = append(ops, noop)
+
+			}
+		}
+	}
+	return ops
+}
+
 func isRelevantCycle(cycle int) bool {
 	return (cycle-20)%40 == 0
 }
@@ -59,7 +80,9 @@ func part2(ops []Op) string {
 				result += "."
 			}
 		}
-		result += "\n"
+		if row < 5 {
+			result += "\n"
+		}
 	}
 
 	return result
@@ -67,23 +90,7 @@ func part2(ops []Op) string {
 
 func main() {
 	lines := util.FileAsLines("input")
-	ops := make([]Op, 0)
-
-	for _, line := range lines {
-		if line != "" {
-			parts := strings.Split(line, " ")
-			switch parts[0] {
-			case "addx":
-				value, _ := strconv.Atoi(parts[1])
-
-				ops = append(ops, noop)
-				ops = append(ops, Op{"add", value})
-			case "noop":
-				ops = append(ops, noop)
-
-			}
-		}
-	}
+	ops := parse(lines)
 
 	fmt.Println(part1(ops))
 	fmt.Println(part2(ops))

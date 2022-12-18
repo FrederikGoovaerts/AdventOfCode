@@ -48,6 +48,19 @@ func parsePacket(line []string, start int) (Packet, int) {
 	return packet, len(line)
 }
 
+func parse(lines []string) []Packet {
+	packets := make([]Packet, 0)
+
+	for _, line := range lines {
+		if line != "" {
+			splitLine := strings.Split(line, "")
+			packet, _ := parsePacket(splitLine, 0)
+			packets = append(packets, packet)
+		}
+	}
+	return packets
+}
+
 func areSorted(left Packet, right Packet) int {
 	if !left.isList && !right.isList {
 		return util.ClampToOne(left.val - right.val)
@@ -117,15 +130,7 @@ func part2(originalPackets []Packet) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	packets := make([]Packet, 0)
-
-	for _, line := range lines {
-		if line != "" {
-			splitLine := strings.Split(line, "")
-			packet, _ := parsePacket(splitLine, 0)
-			packets = append(packets, packet)
-		}
-	}
+	packets := parse(lines)
 
 	fmt.Println(part1(packets))
 	fmt.Println(part2(packets))

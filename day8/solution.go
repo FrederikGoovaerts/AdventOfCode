@@ -143,6 +143,24 @@ func (f *Forest) getScenicScore(x int, y int) int {
 	return north * east * south * west
 }
 
+func parse(lines []string) Forest {
+	forest := Forest{make([][]int, 0)}
+
+	for _, line := range lines {
+		if line != "" {
+			numbers := strings.Split(line, "")
+			forestLine := make([]int, len(numbers))
+			for index, value := range numbers {
+				numberValue, _ := strconv.Atoi(value)
+				forestLine[index] = numberValue
+			}
+			forest.trees = append(forest.trees, forestLine)
+		}
+	}
+
+	return forest
+}
+
 func part1(f Forest) int {
 	result := 0
 	for x := 0; x < len(f.trees); x++ {
@@ -170,19 +188,7 @@ func part2(f Forest) int {
 
 func main() {
 	lines := util.FileAsLines("input")
-	forest := Forest{make([][]int, 0)}
-
-	for _, line := range lines {
-		if line != "" {
-			numbers := strings.Split(line, "")
-			forestLine := make([]int, len(numbers))
-			for index, value := range numbers {
-				numberValue, _ := strconv.Atoi(value)
-				forestLine[index] = numberValue
-			}
-			forest.trees = append(forest.trees, forestLine)
-		}
-	}
+	forest := parse(lines)
 
 	fmt.Println(part1(forest))
 	fmt.Println(part2(forest))

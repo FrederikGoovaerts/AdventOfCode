@@ -60,6 +60,33 @@ func (board *Board) getNeighbors(coord Coord, flipped bool) []Coord {
 	return result
 }
 
+func parse(lines []string) (Board, Coord, Coord) {
+	start := Coord{}
+	end := Coord{}
+	board := Board{}
+
+	for yC, line := range lines {
+		row := make([]Coord, len(line))
+		if line != "" {
+			for xC, char := range line {
+				if char == 'S' {
+					start = Coord{xC, yC, 0}
+					row[xC] = start
+				} else if char == 'E' {
+					end = Coord{xC, yC, 25}
+					row[xC] = end
+				} else {
+					row[xC] = Coord{xC, yC, int(char) - 97}
+
+				}
+			}
+		}
+		board.contents = append(board.contents, row)
+	}
+
+	return board, start, end
+}
+
 func dijk(board Board, start Coord, finishCheck func(coord Coord) bool, flippedNeighbors bool) int {
 	dist := make(map[Coord]int)
 	dist[start] = 0
@@ -99,33 +126,19 @@ func dijk(board Board, start Coord, finishCheck func(coord Coord) bool, flippedN
 	return -1
 }
 
+func part1(board Board, start Coord, end Coord) int {
+	return dijk(board, start, func(coord Coord) bool { return coord == end }, false)
+}
+
+func part2(board Board, end Coord) int {
+	return dijk(board, end, func(coord Coord) bool { return coord.el == 0 }, true)
+}
+
 func main() {
 	lines := util.FileAsLines("input")
+	board, start, end := parse(lines)
 
-	start := Coord{}
-	end := Coord{}
-	board := new(Board)
-
-	for yC, line := range lines {
-		row := make([]Coord, len(line))
-		if line != "" {
-			for xC, char := range line {
-				if char == 'S' {
-					start = Coord{xC, yC, 0}
-					row[xC] = start
-				} else if char == 'E' {
-					end = Coord{xC, yC, 25}
-					row[xC] = end
-				} else {
-					row[xC] = Coord{xC, yC, int(char) - 97}
-
-				}
-			}
-		}
-		board.contents = append(board.contents, row)
-	}
-
-	fmt.Println(dijk(*board, start, func(coord Coord) bool { return coord == end }, false))
-	fmt.Println(dijk(*board, end, func(coord Coord) bool { return coord.el == 0 }, true))
+	fmt.Println(part1(board, start, end))
+	fmt.Println(part2(board, end))
 
 }
