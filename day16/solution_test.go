@@ -3,22 +3,21 @@ package main
 import (
 	"aoc/util"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPart1Example(t *testing.T) {
 	lines := util.FileAsLines("ex1")
 	result := part1(parse(lines))
-	if result != 1651 {
-		t.Error("Result not correct")
-	}
+
+	assert.Equal(t, 1651, result)
 }
 
 func TestPart2Example(t *testing.T) {
 	lines := util.FileAsLines("ex1")
 	result := part2(parse(lines))
-	if result != 1707 {
-		t.Error("Result not correct")
-	}
+	assert.Equal(t, 1707, result)
 }
 
 func BenchmarkPart1(b *testing.B) {
