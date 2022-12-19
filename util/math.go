@@ -35,6 +35,14 @@ func ClampToOne(x int) int {
 	return x
 }
 
+func Sum(list []int) int {
+	result := 0
+	for _, el := range list {
+		result += el
+	}
+	return result
+}
+
 func SerializeCoord(x int, y int) string {
 	return Serialize(x, y)
 }
