@@ -37,21 +37,20 @@ func (el *Element) getElementInSteps(steps int) *Element {
 }
 
 func getShortestShift(num, length int) int {
-	return num
-	// neg := 0
-	// pos := 0
-	// if num < 0 {
-	// 	neg = num % (length - 1)
-	// 	pos = neg + length
-	// } else if num > 0 {
-	// 	pos = num % (length - 1)
-	// 	neg = pos - length
-	// }
-	// if -neg > pos {
-	// 	return pos
-	// } else {
-	// 	return neg
-	// }
+	neg := 0
+	pos := 0
+	if num < 0 {
+		neg = (num-1)%(length-1) + 1
+		pos = neg + length - 1
+	} else if num > 0 {
+		pos = (num-1)%(length-1) + 1
+		neg = pos - length + 1
+	}
+	if -neg > pos {
+		return pos
+	} else {
+		return neg
+	}
 }
 
 func mix(el *Element) {
@@ -110,29 +109,46 @@ func part1(numbers []int) int {
 	for _, element := range originalOrder {
 		mix(element)
 	}
-	// for i := 0; i < length; i++ {
-	// 	el := zero.getElementInSteps(i)
-	// 	fmt.Print(" " + fmt.Sprint(el.value))
-	// }
-	// fmt.Println()
-	// for i := 0; i > -length; i-- {
-	// 	el := zero.getElementInSteps(i)
-	// 	fmt.Print(" " + fmt.Sprint(el.value))
-	// }
-	// fmt.Println()
 
-	a := zero.getElementInSteps(1000)
-	b := a.getElementInSteps(1000)
-	c := b.getElementInSteps(1000)
-	// fmt.Println(a)
-	// fmt.Println(b)
-	// fmt.Println(c)
-
-	return a.value + b.value + c.value
+	return zero.getElementInSteps(1000).value + zero.getElementInSteps(2000).value + zero.getElementInSteps(3000).value
 }
 
 func part2(numbers []int) int {
-	return 0
+	length := len(numbers)
+	originalOrder := make([]*Element, 0, length)
+
+	// Chain setup
+	var first *Element = nil
+	var zero *Element = nil
+	var curr *Element = nil
+
+	for _, num := range numbers {
+		keyedNumber := 811589153 * num
+		shortest := getShortestShift(keyedNumber, length)
+		element := Element{keyedNumber, shortest, curr, nil}
+		curr = &element
+		if first == nil {
+			first = &element
+		}
+		if keyedNumber == 0 {
+			zero = &element
+		}
+		if element.previous != nil {
+			element.previous.next = &element
+		}
+
+		originalOrder = append(originalOrder, &element)
+	}
+	curr.next = first
+	first.previous = curr
+
+	for i := 0; i < 10; i++ {
+		for _, element := range originalOrder {
+			mix(element)
+		}
+	}
+
+	return zero.getElementInSteps(1000).value + zero.getElementInSteps(2000).value + zero.getElementInSteps(3000).value
 }
 
 func main() {
