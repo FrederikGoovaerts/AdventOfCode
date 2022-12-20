@@ -28,6 +28,13 @@ func TestClampToOne(t *testing.T) {
 	assert.Equal(t, -1, ClampToOne(-7))
 }
 
+func TestSumUpTo(t *testing.T) {
+	assert.Equal(t, 0, SumUpTo(0))
+	assert.Equal(t, 1, SumUpTo(1))
+	assert.Equal(t, 10, SumUpTo(4))
+	assert.Equal(t, 28, SumUpTo(7))
+}
+
 func TestSerializeCoord(t *testing.T) {
 	assert.Equal(t, "1 2", SerializeCoord(1, 2))
 }
