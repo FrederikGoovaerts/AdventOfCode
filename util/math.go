@@ -43,6 +43,14 @@ func Sum(list []int) int {
 	return result
 }
 
+func Product(list []int) int {
+	result := 1
+	for _, el := range list {
+		result *= el
+	}
+	return result
+}
+
 func SerializeCoord(x int, y int) string {
 	return Serialize(x, y)
 }

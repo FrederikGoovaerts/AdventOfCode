@@ -34,39 +34,114 @@ func parse(lines []string) []Blueprint {
 	return blueprints
 }
 
-func run(bl Blueprint, inv Inventory, minute int) int {
-	if minute == 24 {
-		minedInv := inv.mine()
-		return bl.id * minedInv.geode
+func simulate(blueprint Blueprint, path []Robot, timeLimit int) int {
+	buildCounter := 0
+
+	oreRobot := 1
+	clayRobot := 0
+	obsRobot := 0
+	geoRobot := 0
+	ore := 0
+	clay := 0
+	obs := 0
+	geo := 0
+	for t := 1; t <= timeLimit; t++ {
+		willCreate := false
+		if buildCounter < len(path) {
+			robotToCreate := path[buildCounter]
+			if blueprint.canCreate(robotToCreate, ore, clay, obs) {
+				willCreate = true
+			}
+		}
+
+		ore += oreRobot
+		clay += clayRobot
+		obs += obsRobot
+		geo += geoRobot
+
+		if willCreate {
+			buildCounter++
+			switch path[buildCounter-1] {
+			case OreRobot:
+				oreRobot++
+				ore -= blueprint.oreRobotOre
+			case ClayRobot:
+				clayRobot++
+				ore -= blueprint.clayRobotOre
+			case ObsidianRobot:
+				obsRobot++
+				clay -= blueprint.obsRobotClay
+				ore -= blueprint.obsRobotOre
+			case GeodeRobot:
+				geoRobot++
+				obs -= blueprint.geoRobotObs
+				ore -= blueprint.geoRobotOre
+			}
+		}
 	}
-
-	craftable := inv.shouldCreate(bl)
-	minedInv := inv.mine()
-
-	bestQuality := 0
-	for _, craftableRobot := range craftable {
-		newInv := minedInv.makeRobot(bl, craftableRobot)
-		bestQuality = util.MaxInt(bestQuality, run(bl, newInv, minute+1))
+	if buildCounter < len(path) {
+		return -1
+	} else {
+		return geo
 	}
+}
 
-	return bestQuality
+var advancedRobots = []Robot{ClayRobot, ObsidianRobot, GeodeRobot}
+
+// Expertly crafted with my intellectual insight
+var startingPaths = [][]Robot{
+	{},
+	{OreRobot},
+	{OreRobot, OreRobot},
+	{ClayRobot, OreRobot},
+	{OreRobot, ClayRobot, OreRobot},
+	{OreRobot, OreRobot, OreRobot},
+	{OreRobot, OreRobot, OreRobot, OreRobot},
+	{OreRobot, ClayRobot, OreRobot, OreRobot},
+	{OreRobot, OreRobot, ClayRobot, OreRobot},
+}
+
+func getBest(blueprint Blueprint, path []Robot, time int) int {
+	score := simulate(blueprint, path, time)
+
+	if score == -1 {
+		return score
+	}
+	newPath := make([]Robot, len(path)+1)
+	copy(newPath, path)
+	for _, robot := range advancedRobots {
+		newPath[len(path)] = robot
+		newScore := getBest(blueprint, newPath, time)
+		if newScore > score {
+			score = newScore
+		}
+	}
+	return score
 }
 
 func part1(blueprints []Blueprint) int {
-	initialInv := Inventory{}
-	initialInv.oreRobot = 1
-
-	qualityLevels := make([]int, len(blueprints))
+	score := make([]int, len(blueprints))
 
 	for index, blueprint := range blueprints {
-		qualityLevels[index] = run(blueprint, initialInv, 1)
+		for _, p := range startingPaths {
+			score[index] = util.MaxInt(getBest(blueprint, p, 24), score[index])
+		}
+		score[index] *= blueprint.id
 	}
 
-	return util.Sum(qualityLevels)
+	return util.Sum(score)
 }
 
 func part2(blueprints []Blueprint) int {
-	return 0
+	score := make([]int, len(blueprints))
+
+	for index, blueprint := range blueprints {
+		for _, p := range startingPaths {
+			score[index] = util.MaxInt(getBest(blueprint, p, 32), score[index])
+		}
+	}
+
+	return util.Product(score)
 }
 
 func main() {
@@ -75,5 +150,5 @@ func main() {
 	blueprints := parse(lines)
 
 	fmt.Println(part1(blueprints))
-	fmt.Println(part2(blueprints))
+	fmt.Println(part2(blueprints[:3]))
 }
