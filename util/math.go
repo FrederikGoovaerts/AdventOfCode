@@ -51,6 +51,10 @@ func Product(list []int) int {
 	return result
 }
 
+func SumUpTo(to int) int {
+	return (to * (to + 1)) / 2
+}
+
 func SerializeCoord(x int, y int) string {
 	return Serialize(x, y)
 }

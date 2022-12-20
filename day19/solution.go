@@ -34,7 +34,7 @@ func parse(lines []string) []Blueprint {
 	return blueprints
 }
 
-func simulate(blueprint Blueprint, path []Robot, timeLimit int) int {
+func simulate(blueprint Blueprint, path []Robot, timeLimit int) (int, int) {
 	buildCounter := 0
 
 	oreRobot := 1
@@ -45,6 +45,8 @@ func simulate(blueprint Blueprint, path []Robot, timeLimit int) int {
 	clay := 0
 	obs := 0
 	geo := 0
+
+	timeDone := -1
 	for t := 1; t <= timeLimit; t++ {
 		willCreate := false
 		if buildCounter < len(path) {
@@ -52,6 +54,8 @@ func simulate(blueprint Blueprint, path []Robot, timeLimit int) int {
 			if blueprint.canCreate(robotToCreate, ore, clay, obs) {
 				willCreate = true
 			}
+		} else if timeDone == -1 {
+			timeDone = t
 		}
 
 		ore += oreRobot
@@ -80,9 +84,9 @@ func simulate(blueprint Blueprint, path []Robot, timeLimit int) int {
 		}
 	}
 	if buildCounter < len(path) {
-		return -1
+		return -1, -1
 	} else {
-		return geo
+		return geo, geo + util.SumUpTo(timeLimit-timeDone)
 	}
 }
 
@@ -101,17 +105,20 @@ var startingPaths = [][]Robot{
 	{OreRobot, OreRobot, ClayRobot, OreRobot},
 }
 
-func getBest(blueprint Blueprint, path []Robot, time int) int {
-	score := simulate(blueprint, path, time)
+func getBest(blueprint Blueprint, path []Robot, time int, bestForNow int) int {
+	score, max := simulate(blueprint, path, time)
 
 	if score == -1 {
 		return score
+	}
+	if max <= bestForNow {
+		return bestForNow
 	}
 	newPath := make([]Robot, len(path)+1)
 	copy(newPath, path)
 	for _, robot := range advancedRobots {
 		newPath[len(path)] = robot
-		newScore := getBest(blueprint, newPath, time)
+		newScore := getBest(blueprint, newPath, time, util.MaxInt(score, bestForNow))
 		if newScore > score {
 			score = newScore
 		}
@@ -124,7 +131,7 @@ func part1(blueprints []Blueprint) int {
 
 	for index, blueprint := range blueprints {
 		for _, p := range startingPaths {
-			score[index] = util.MaxInt(getBest(blueprint, p, 24), score[index])
+			score[index] = util.MaxInt(getBest(blueprint, p, 24, 0), score[index])
 		}
 		score[index] *= blueprint.id
 	}
@@ -133,11 +140,12 @@ func part1(blueprints []Blueprint) int {
 }
 
 func part2(blueprints []Blueprint) int {
-	score := make([]int, len(blueprints))
+	amount := util.MinInt(3, len(blueprints))
+	score := make([]int, amount)
 
-	for index, blueprint := range blueprints {
+	for index, blueprint := range blueprints[:amount] {
 		for _, p := range startingPaths {
-			score[index] = util.MaxInt(getBest(blueprint, p, 32), score[index])
+			score[index] = util.MaxInt(getBest(blueprint, p, 32, 0), score[index])
 		}
 	}
 
@@ -150,5 +158,5 @@ func main() {
 	blueprints := parse(lines)
 
 	fmt.Println(part1(blueprints))
-	fmt.Println(part2(blueprints[:3]))
+	fmt.Println(part2(blueprints))
 }
