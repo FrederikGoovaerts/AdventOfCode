@@ -78,7 +78,7 @@ func mix(el *Element) {
 	}
 }
 
-func part1(numbers []int) int {
+func solve(numbers []int, key, iterations int) int {
 	length := len(numbers)
 	originalOrder := make([]*Element, 0, length)
 
@@ -88,42 +88,7 @@ func part1(numbers []int) int {
 	var curr *Element = nil
 
 	for _, num := range numbers {
-		shortest := getShortestShift(num, length)
-		element := Element{num, shortest, curr, nil}
-		curr = &element
-		if first == nil {
-			first = &element
-		}
-		if num == 0 {
-			zero = &element
-		}
-		if element.previous != nil {
-			element.previous.next = &element
-		}
-
-		originalOrder = append(originalOrder, &element)
-	}
-	curr.next = first
-	first.previous = curr
-
-	for _, element := range originalOrder {
-		mix(element)
-	}
-
-	return zero.getElementInSteps(1000).value + zero.getElementInSteps(2000).value + zero.getElementInSteps(3000).value
-}
-
-func part2(numbers []int) int {
-	length := len(numbers)
-	originalOrder := make([]*Element, 0, length)
-
-	// Chain setup
-	var first *Element = nil
-	var zero *Element = nil
-	var curr *Element = nil
-
-	for _, num := range numbers {
-		keyedNumber := 811589153 * num
+		keyedNumber := key * num
 		shortest := getShortestShift(keyedNumber, length)
 		element := Element{keyedNumber, shortest, curr, nil}
 		curr = &element
@@ -142,13 +107,21 @@ func part2(numbers []int) int {
 	curr.next = first
 	first.previous = curr
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < iterations; i++ {
 		for _, element := range originalOrder {
 			mix(element)
 		}
 	}
 
 	return zero.getElementInSteps(1000).value + zero.getElementInSteps(2000).value + zero.getElementInSteps(3000).value
+}
+
+func part1(numbers []int) int {
+	return solve(numbers, 1, 1)
+}
+
+func part2(numbers []int) int {
+	return solve(numbers, 811589153, 10)
 }
 
 func main() {
