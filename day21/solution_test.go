@@ -10,13 +10,13 @@ import (
 func TestPart1Example(t *testing.T) {
 	lines := util.FileAsLines("ex1")
 	result := part1(parse(lines))
-	assert.Equal(t, 33, result)
+	assert.Equal(t, 152, result)
 }
 
 func TestPart2Example(t *testing.T) {
 	lines := util.FileAsLines("ex1")
 	result := part2(parse(lines))
-	assert.Equal(t, 3472, result)
+	assert.Equal(t, 301, result)
 }
 
 func BenchmarkPart1(b *testing.B) {
