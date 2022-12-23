@@ -75,8 +75,8 @@ func getProposal(x, y int, dir string) string {
 }
 
 func doRound(dirCounter int, coordinates util.StringSet) util.StringSet {
-	proposals := make(map[string]string)
-	proposalCounters := make(map[string]int)
+	proposals := make(map[string]string, len(coordinates))
+	proposalCounters := make(map[string]int, len(coordinates))
 
 	for coord := range coordinates {
 		x, y := util.DeserializeCoord(coord)
@@ -99,7 +99,7 @@ func doRound(dirCounter int, coordinates util.StringSet) util.StringSet {
 		}
 	}
 
-	result := make(util.StringSet)
+	result := make(util.StringSet, len(coordinates))
 	for origin, proposal := range proposals {
 		if proposalCounters[proposal] == 1 {
 			result[proposal] = util.EMPTY_STRUCT
