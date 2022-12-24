@@ -36,7 +36,7 @@ type Map struct {
 func (m Map) visualize() {
 	for y := 0; y <= m.yMax; y++ {
 		for x := 0; x <= m.xMax; x++ {
-			res, present := m.cont[util.SerializeCoord(x, y)]
+			res, present := m.cont[util.SerializeCoordRaw(x, y)]
 			if present {
 				if res == Clear {
 					fmt.Print(".")
@@ -53,7 +53,7 @@ func (m Map) visualize() {
 
 func (m Map) getStartingX() int {
 	for x := 0; x <= m.xMax; x++ {
-		res, present := m.cont[util.SerializeCoord(x, 0)]
+		res, present := m.cont[util.SerializeCoordRaw(x, 0)]
 		if present && res == Clear {
 			return x
 		}
@@ -63,46 +63,46 @@ func (m Map) getStartingX() int {
 
 func (m Map) getNext(currX, currY int, dir Direction) (int, int, Path) {
 	if dir == North {
-		res, present := m.cont[util.SerializeCoord(currX, currY-1)]
+		res, present := m.cont[util.SerializeCoordRaw(currX, currY-1)]
 		if present {
 			return currX, currY - 1, res
 		}
 		for y := m.yMax; y > currY; y-- {
-			res, present := m.cont[util.SerializeCoord(currX, y)]
+			res, present := m.cont[util.SerializeCoordRaw(currX, y)]
 			if present {
 				return currX, y, res
 			}
 		}
 	} else if dir == East {
-		res, present := m.cont[util.SerializeCoord(currX+1, currY)]
+		res, present := m.cont[util.SerializeCoordRaw(currX+1, currY)]
 		if present {
 
 			return currX + 1, currY, res
 		}
 		for x := 0; x < currX; x++ {
-			res, present := m.cont[util.SerializeCoord(x, currY)]
+			res, present := m.cont[util.SerializeCoordRaw(x, currY)]
 			if present {
 				return x, currY, res
 			}
 		}
 	} else if dir == South {
-		res, present := m.cont[util.SerializeCoord(currX, currY+1)]
+		res, present := m.cont[util.SerializeCoordRaw(currX, currY+1)]
 		if present {
 			return currX, currY + 1, res
 		}
 		for y := 0; y < currY; y++ {
-			res, present := m.cont[util.SerializeCoord(currX, y)]
+			res, present := m.cont[util.SerializeCoordRaw(currX, y)]
 			if present {
 				return currX, y, res
 			}
 		}
 	} else if dir == West {
-		res, present := m.cont[util.SerializeCoord(currX-1, currY)]
+		res, present := m.cont[util.SerializeCoordRaw(currX-1, currY)]
 		if present {
 			return currX - 1, currY, res
 		}
 		for x := m.xMax; x > currX; x-- {
-			res, present := m.cont[util.SerializeCoord(x, currY)]
+			res, present := m.cont[util.SerializeCoordRaw(x, currY)]
 			if present {
 				return x, currY, res
 			}
@@ -146,11 +146,11 @@ func parse(lines []string) (Map, []Move) {
 		} else {
 			for x, symbol := range line {
 				if symbol == '.' {
-					theMap.cont[util.SerializeCoord(x, y)] = Clear
+					theMap.cont[util.SerializeCoordRaw(x, y)] = Clear
 					theMap.xMax = util.MaxInt(theMap.xMax, x)
 					theMap.yMax = util.MaxInt(theMap.yMax, y)
 				} else if symbol == '#' {
-					theMap.cont[util.SerializeCoord(x, y)] = Wall
+					theMap.cont[util.SerializeCoordRaw(x, y)] = Wall
 					theMap.xMax = util.MaxInt(theMap.xMax, x)
 					theMap.yMax = util.MaxInt(theMap.yMax, y)
 				}

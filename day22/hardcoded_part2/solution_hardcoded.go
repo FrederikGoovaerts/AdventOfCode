@@ -35,7 +35,7 @@ type Map struct {
 
 func (m Map) getStartingX() int {
 	for x := 0; x <= m.xMax; x++ {
-		res, present := m.cont[util.SerializeCoord(x, 0)]
+		res, present := m.cont[util.SerializeCoordRaw(x, 0)]
 		if present && res == Clear {
 			return x
 		}
@@ -46,21 +46,21 @@ func (m Map) getStartingX() int {
 func (m Map) getNextWithEdges(currX, currY int, dir Direction, e EdgeMap) (int, int, Direction, Path) {
 	if e.has(currX, currY, dir) {
 		newX, newY, newDir := e.getNext(currX, currY, dir)
-		path := m.cont[util.SerializeCoord(newX, newY)]
+		path := m.cont[util.SerializeCoordRaw(newX, newY)]
 		return newX, newY, newDir, path
 	}
 
 	if dir == North {
-		res := m.cont[util.SerializeCoord(currX, currY-1)]
+		res := m.cont[util.SerializeCoordRaw(currX, currY-1)]
 		return currX, currY - 1, dir, res
 	} else if dir == East {
-		res := m.cont[util.SerializeCoord(currX+1, currY)]
+		res := m.cont[util.SerializeCoordRaw(currX+1, currY)]
 		return currX + 1, currY, dir, res
 	} else if dir == South {
-		res := m.cont[util.SerializeCoord(currX, currY+1)]
+		res := m.cont[util.SerializeCoordRaw(currX, currY+1)]
 		return currX, currY + 1, dir, res
 	} else if dir == West {
-		res := m.cont[util.SerializeCoord(currX-1, currY)]
+		res := m.cont[util.SerializeCoordRaw(currX-1, currY)]
 		return currX - 1, currY, dir, res
 	}
 	panic("Went out of bounds")
@@ -129,11 +129,11 @@ func parse(lines []string) (Map, []Move, EdgeMap) {
 		} else {
 			for x, symbol := range line {
 				if symbol == '.' {
-					theMap.cont[util.SerializeCoord(x, y)] = Clear
+					theMap.cont[util.SerializeCoordRaw(x, y)] = Clear
 					theMap.xMax = util.MaxInt(theMap.xMax, x)
 					theMap.yMax = util.MaxInt(theMap.yMax, y)
 				} else if symbol == '#' {
-					theMap.cont[util.SerializeCoord(x, y)] = Wall
+					theMap.cont[util.SerializeCoordRaw(x, y)] = Wall
 					theMap.xMax = util.MaxInt(theMap.xMax, x)
 					theMap.yMax = util.MaxInt(theMap.yMax, y)
 				}

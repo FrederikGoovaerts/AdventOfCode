@@ -17,7 +17,7 @@ const (
 type Cave map[string]CaveFilling
 
 func (c *Cave) inputPlugged() bool {
-	return (*c)[util.SerializeCoord(500, 0)] == Sand
+	return (*c)[util.SerializeCoordRaw(500, 0)] == Sand
 }
 
 func parse(lines []string) (map[string]CaveFilling, int) {
@@ -32,19 +32,19 @@ func parse(lines []string) (map[string]CaveFilling, int) {
 				endX, endY := getLineCoord(linePoints[i+1])
 				if startY < endY {
 					for y := startY; y <= endY; y++ {
-						cave[util.SerializeCoord(startX, y)] = Rock
+						cave[util.SerializeCoordRaw(startX, y)] = Rock
 					}
 				} else if startY > endY {
 					for y := startY; y >= endY; y-- {
-						cave[util.SerializeCoord(startX, y)] = Rock
+						cave[util.SerializeCoordRaw(startX, y)] = Rock
 					}
 				} else if startX < endX {
 					for x := startX; x <= endX; x++ {
-						cave[util.SerializeCoord(x, startY)] = Rock
+						cave[util.SerializeCoordRaw(x, startY)] = Rock
 					}
 				} else {
 					for x := startX; x >= endX; x-- {
-						cave[util.SerializeCoord(x, startY)] = Rock
+						cave[util.SerializeCoordRaw(x, startY)] = Rock
 					}
 				}
 
@@ -72,19 +72,19 @@ func (c *Cave) dropSand(bedrock int, bedrockIsFloor bool) (string, bool) {
 			} else {
 				return "", true
 			}
-		} else if _, occupied := (*c)[util.SerializeCoord(x, y+1)]; !occupied {
+		} else if _, occupied := (*c)[util.SerializeCoordRaw(x, y+1)]; !occupied {
 			y++
-		} else if _, occupied := (*c)[util.SerializeCoord(x-1, y+1)]; !occupied {
+		} else if _, occupied := (*c)[util.SerializeCoordRaw(x-1, y+1)]; !occupied {
 			y++
 			x--
-		} else if _, occupied := (*c)[util.SerializeCoord(x+1, y+1)]; !occupied {
+		} else if _, occupied := (*c)[util.SerializeCoordRaw(x+1, y+1)]; !occupied {
 			y++
 			x++
 		} else {
 			moved = false
 		}
 	}
-	loc := util.SerializeCoord(x, y)
+	loc := util.SerializeCoordRaw(x, y)
 	(*c)[loc] = Sand
 	return loc, false
 }

@@ -28,6 +28,15 @@ func Abs(x int) int {
 	return x
 }
 
+func PosMod(x int, mod int) int {
+	res := x % mod
+	if res < 0 {
+		return res + mod
+	} else {
+		return res
+	}
+}
+
 func ClampToOne(x int) int {
 	if x != 0 {
 		return x / Abs(x)
@@ -55,11 +64,30 @@ func SumUpTo(to int) int {
 	return (to * (to + 1)) / 2
 }
 
-func SerializeCoord(x int, y int) string {
+func Lcm(first int, second int) int {
+	low := MinInt(first, second)
+	high := MaxInt(first, second)
+	curr := high
+	for curr%low != 0 {
+		curr += high
+	}
+	return curr
+}
+
+type Coord struct {
+	X int
+	Y int
+}
+
+func SerializeCoord(c Coord) string {
+	return Serialize(c.X, c.Y)
+}
+
+func SerializeCoordRaw(x int, y int) string {
 	return Serialize(x, y)
 }
 
-func DeserializeCoord(ser string) (int, int) {
+func DeserializeCoordRaw(ser string) (int, int) {
 	parts := strings.Split(ser, " ")
 	x, _ := strconv.Atoi(parts[0])
 	y, _ := strconv.Atoi(parts[1])

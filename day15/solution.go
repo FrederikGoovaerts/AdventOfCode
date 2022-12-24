@@ -69,7 +69,7 @@ func parse(lines []string) ([]Sensor, util.StringSet, int, int) {
 			distance := manhattanDistance(sensorX, sensorY, beaconX, beaconY)
 
 			sensors = append(sensors, Sensor{sensorX, sensorY, distance})
-			beaconSet[util.SerializeCoord(beaconX, beaconY)] = util.EMPTY_STRUCT
+			beaconSet[util.SerializeCoordRaw(beaconX, beaconY)] = util.EMPTY_STRUCT
 
 			if sensorX-distance < smallestXCovered {
 				smallestXCovered = sensorX - distance
@@ -87,7 +87,7 @@ func part1(sensors []Sensor, beacons util.StringSet, xStart int, xEnd int, y int
 	result := 0
 
 	for x := xStart; x <= xEnd; x++ {
-		if _, ok := beacons[util.SerializeCoord(x, y)]; ok {
+		if _, ok := beacons[util.SerializeCoordRaw(x, y)]; ok {
 			continue
 		}
 		for _, sensor := range sensors {

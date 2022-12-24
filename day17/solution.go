@@ -39,8 +39,8 @@ func tryBlow(dir Direction, xOff int, yOff int, block []string, blockName Block,
 		return xOff
 	}
 	for _, blockPart := range block {
-		bX, bY := util.DeserializeCoord(blockPart)
-		_, inTower := tower[util.SerializeCoord(bX+int(dir)+xOff, bY+yOff)]
+		bX, bY := util.DeserializeCoordRaw(blockPart)
+		_, inTower := tower[util.SerializeCoordRaw(bX+int(dir)+xOff, bY+yOff)]
 		if inTower {
 			return xOff
 		}
@@ -53,8 +53,8 @@ func checkCanDrop(xOff int, yOff int, block []string, tower map[string]struct{})
 		return false
 	}
 	for _, blockPart := range block {
-		bX, bY := util.DeserializeCoord(blockPart)
-		_, inTower := tower[util.SerializeCoord(bX+xOff, bY+yOff-1)]
+		bX, bY := util.DeserializeCoordRaw(blockPart)
+		_, inTower := tower[util.SerializeCoordRaw(bX+xOff, bY+yOff-1)]
 		if inTower {
 			return false
 		}
@@ -89,8 +89,8 @@ func part1(directions []Direction) int {
 		}
 
 		for _, blockPart := range block {
-			bX, bY := util.DeserializeCoord(blockPart)
-			towerBlocks[util.SerializeCoord(bX+xOff, bY+yOff)] = util.EMPTY_STRUCT
+			bX, bY := util.DeserializeCoordRaw(blockPart)
+			towerBlocks[util.SerializeCoordRaw(bX+xOff, bY+yOff)] = util.EMPTY_STRUCT
 		}
 
 		blockHighest := blockHeight(blockName) - 1 + yOff
@@ -172,8 +172,8 @@ func part2(directions []Direction) int {
 		}
 
 		for _, blockPart := range block {
-			bX, bY := util.DeserializeCoord(blockPart)
-			towerBlocks[util.SerializeCoord(bX+xOff, bY+yOff)] = util.EMPTY_STRUCT
+			bX, bY := util.DeserializeCoordRaw(blockPart)
+			towerBlocks[util.SerializeCoordRaw(bX+xOff, bY+yOff)] = util.EMPTY_STRUCT
 		}
 
 		blockHighest := blockHeight(blockName) - 1 + yOff

@@ -21,11 +21,25 @@ func TestAbs(t *testing.T) {
 	assert.Equal(t, 0, Abs(0))
 	assert.Equal(t, 5, Abs(-5))
 }
+func TestPosMod(t *testing.T) {
+	assert.Equal(t, 2, PosMod(2, 4))
+	assert.Equal(t, 0, PosMod(4, 4))
+	assert.Equal(t, 1, PosMod(5, 4))
+	assert.Equal(t, 3, PosMod(-1, 4))
+	assert.Equal(t, 2, PosMod(-6, 4))
+}
 
 func TestClampToOne(t *testing.T) {
 	assert.Equal(t, 1, ClampToOne(15))
 	assert.Equal(t, 0, ClampToOne(0))
 	assert.Equal(t, -1, ClampToOne(-7))
+}
+
+func TestLcm(t *testing.T) {
+	assert.Equal(t, 6, Lcm(2, 3))
+	assert.Equal(t, 12, Lcm(3, 12))
+	assert.Equal(t, 12, Lcm(4, 6))
+	assert.Equal(t, 56, Lcm(7, 8))
 }
 
 func TestSumUpTo(t *testing.T) {
@@ -36,11 +50,11 @@ func TestSumUpTo(t *testing.T) {
 }
 
 func TestSerializeCoord(t *testing.T) {
-	assert.Equal(t, "1 2", SerializeCoord(1, 2))
+	assert.Equal(t, "1 2", SerializeCoordRaw(1, 2))
 }
 
 func TestDeserializeCoord(t *testing.T) {
-	x, y := DeserializeCoord("1 2")
+	x, y := DeserializeCoordRaw("1 2")
 	assert.Equal(t, 1, x)
 	assert.Equal(t, 2, y)
 }
