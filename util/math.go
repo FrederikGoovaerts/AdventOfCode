@@ -74,15 +74,6 @@ func Lcm(first int, second int) int {
 	return curr
 }
 
-type Coord struct {
-	X int
-	Y int
-}
-
-func SerializeCoord(c Coord) string {
-	return Serialize(c.X, c.Y)
-}
-
 func SerializeCoordRaw(x int, y int) string {
 	return Serialize(x, y)
 }

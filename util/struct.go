@@ -15,4 +15,12 @@ func (s *StringSet) Delete(in string) {
 	delete(*s, in)
 }
 
+func (s StringSet) Copy() StringSet {
+	result := make(StringSet)
+	for k := range s {
+		result[k] = EMPTY_STRUCT
+	}
+	return result
+}
+
 var EMPTY_STRUCT = struct{}{}
