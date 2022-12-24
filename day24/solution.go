@@ -150,6 +150,7 @@ func part2(board Board) int16 {
 			visited = make(util.StringSet)
 			states = make([]State, 0)
 			states = append(states, State{board.maxX, board.maxY + 1, state.step + 1})
+			continue
 		}
 
 		if state.x == 0 && state.y == 0 && reached1 && !reached2 {
@@ -157,6 +158,7 @@ func part2(board Board) int16 {
 			visited = make(util.StringSet)
 			states = make([]State, 0)
 			states = append(states, State{0, -1, state.step + 1})
+			continue
 		}
 
 		if state.x == board.maxX && state.y == board.maxY && reached1 && reached2 {
