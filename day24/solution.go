@@ -66,17 +66,16 @@ func getNeighbors(x, y, maxX, maxY int8) []Coord {
 	if x == 0 {
 		if y == -1 {
 			return []Coord{{0, 0}}
-		} else if y == 0 {
-			return []Coord{{1, 0}, {0, 1}}
 		} else if y == maxY {
 			return []Coord{{1, y}, {0, y - 1}}
 		} else {
 			return []Coord{{1, y}, {0, y + 1}, {0, y - 1}}
 		}
 	} else if x == maxX {
-		// Some cases not added because they are automatically detected as solved and don't need neighbor calc
 		if y == 0 {
 			return []Coord{{maxX, 1}, {maxX - 1, 0}}
+		} else if y == maxY+1 {
+			return []Coord{{maxX, maxY - 1}}
 		} else {
 			return []Coord{{maxX, y + 1}, {maxX, y - 1}, {maxX - 1, y}}
 		}
@@ -133,8 +132,52 @@ func part1(board Board) int16 {
 	return -1
 }
 
-func part2(board Board) int {
-	return 0
+func part2(board Board) int16 {
+	visited := make(util.StringSet)
+
+	states := make([]State, 0)
+	states = append(states, State{0, -1, 0})
+
+	reached1 := false
+	reached2 := false
+
+	for len(states) > 0 {
+		state := states[0]
+		states = states[1:]
+
+		if state.x == board.maxX && state.y == board.maxY && !reached1 {
+			reached1 = true
+			visited = make(util.StringSet)
+			states = make([]State, 0)
+			states = append(states, State{board.maxX, board.maxY + 1, state.step + 1})
+		}
+
+		if state.x == 0 && state.y == 0 && reached1 && !reached2 {
+			reached2 = true
+			visited = make(util.StringSet)
+			states = make([]State, 0)
+			states = append(states, State{0, -1, state.step + 1})
+		}
+
+		if state.x == board.maxX && state.y == board.maxY && reached1 && reached2 {
+			return state.step + 1
+		}
+
+		nextTimeBlockers := board.blockedByTime[(state.step+1)%board.cycleTime]
+
+		for _, dest := range getNeighborsAndWait(state.x, state.y, board.maxX, board.maxY) {
+			// Should be an unoccupied space next round
+			if !nextTimeBlockers.Has(util.Serialize(dest.x, dest.y)) {
+				// Should not be a visited state
+				if !visited.Has(util.Serialize(dest.x, dest.y, (state.step+1)%board.cycleTime)) {
+					visited.Add(util.Serialize(dest.x, dest.y, (state.step+1)%board.cycleTime))
+					states = append(states, State{dest.x, dest.y, state.step + 1})
+				}
+			}
+		}
+	}
+
+	return -1
 }
 
 func main() {
