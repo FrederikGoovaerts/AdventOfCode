@@ -8,10 +8,10 @@ import (
 
 type Board struct {
 	// These max values are not counting the last end square
-	maxX          int8
-	maxY          int8
-	cycleTime     int16
-	blockedByTime map[int16]*util.StringSet
+	maxX          int
+	maxY          int
+	cycleTime     int
+	blockedByTime map[int]*util.StringSet
 }
 
 func getSymbolOffset(symbol string) (int, int) {
@@ -34,10 +34,10 @@ func parse(lines []string) Board {
 	cycleTime := util.Lcm(width, height)
 
 	// Initialize empty set of blocked positions for each timestep in the cycle
-	blockedByTime := make(map[int16]*util.StringSet, 600)
+	blockedByTime := make(map[int]*util.StringSet, 600)
 	for i := 0; i < cycleTime; i++ {
 		set := make(util.StringSet)
-		blockedByTime[int16(i)] = &set
+		blockedByTime[int(i)] = &set
 	}
 
 	// For each blizzard in the input, fill its position per timestep in the corresponding set
@@ -48,21 +48,21 @@ func parse(lines []string) Board {
 			if symbol == ">" || symbol == "<" || symbol == "^" || symbol == "v" {
 				xOff, yOff := getSymbolOffset(symbol)
 				for i := 0; i < cycleTime; i++ {
-					(*blockedByTime[int16(i)])[util.SerializeCoordRaw(util.PosMod(x+(xOff*i), width), util.PosMod(y+(yOff*i), height))] = util.EMPTY_STRUCT
+					(*blockedByTime[int(i)])[util.SerializeCoordRaw(util.PosMod(x+(xOff*i), width), util.PosMod(y+(yOff*i), height))] = util.EMPTY_STRUCT
 				}
 			}
 		}
 	}
 
-	return Board{int8(width - 1), int8(height - 1), int16(cycleTime), blockedByTime}
+	return Board{int(width - 1), int(height - 1), int(cycleTime), blockedByTime}
 }
 
 type Coord struct {
-	x int8
-	y int8
+	x int
+	y int
 }
 
-func getNeighbors(x, y, maxX, maxY int8) []Coord {
+func getNeighbors(x, y, maxX, maxY int) []Coord {
 	if x == 0 {
 		if y == -1 {
 			return []Coord{{0, 0}}
@@ -90,18 +90,18 @@ func getNeighbors(x, y, maxX, maxY int8) []Coord {
 	}
 }
 
-func getNeighborsAndWait(x, y, maxX, maxY int8) []Coord {
+func getNeighborsAndWait(x, y, maxX, maxY int) []Coord {
 	n := getNeighbors(x, y, maxX, maxY)
 	return append(n, Coord{x, y})
 }
 
 type State struct {
-	x    int8
-	y    int8
-	step int16
+	x    int
+	y    int
+	step int
 }
 
-func part1(board Board) int16 {
+func part1(board Board) int {
 	visited := make(util.StringSet)
 
 	states := make([]State, 0)
@@ -132,7 +132,7 @@ func part1(board Board) int16 {
 	return -1
 }
 
-func part2(board Board) int16 {
+func part2(board Board) int {
 	visited := make(util.StringSet)
 
 	states := make([]State, 0)
