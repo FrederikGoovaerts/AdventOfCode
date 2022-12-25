@@ -1,7 +1,9 @@
-# Advent of Code 2021 solution
+# 2021 solutions
 
-My [Advent of Code](https://adventofcode.com) solutions for the 2021 edition, written in Typescript.
+Solutions for the 2021 edition, written in Typescript.
 
 ## Running the solutions
 
-After running `npm i` in the root of the repository, visit any numbered folder corresponding to a day, e.g. `/src/12` for day 12. Inside, run `npx ts-node solution.ts`.
+- Run `npm i` in the root of the repository
+- Navigate to a folder corresponding to a day, e.g. ` cd /src/12` for day 12
+- Run `npx ts-node solution.ts`, which will print the result for each part of that day
