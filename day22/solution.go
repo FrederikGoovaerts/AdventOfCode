@@ -61,6 +61,15 @@ func (m Map) getStartingX() int {
 	return -1
 }
 
+func (m Map) has(x, y int) bool {
+	_, present := m.cont[util.Serialize(x, y)]
+	return present
+}
+
+func (m Map) get(x, y int) Path {
+	return m.cont[util.Serialize(x, y)]
+}
+
 func (m Map) getNext(currX, currY int, dir Direction) (int, int, Path) {
 	if dir == North {
 		res, present := m.cont[util.SerializeCoordRaw(currX, currY-1)]
@@ -111,7 +120,30 @@ func (m Map) getNext(currX, currY int, dir Direction) (int, int, Path) {
 	panic("Went out of bounds")
 }
 
-func parse(lines []string) (Map, []Move) {
+func (m Map) getNextWithEdges(currX, currY int, dir Direction, e EdgeMap) (int, int, Direction, Path) {
+	if e.has(currX, currY, dir) {
+		newX, newY, newDir := e.getNext(currX, currY, dir)
+		path := m.cont[util.SerializeCoordRaw(newX, newY)]
+		return newX, newY, newDir, path
+	}
+
+	if dir == North {
+		res := m.cont[util.SerializeCoordRaw(currX, currY-1)]
+		return currX, currY - 1, dir, res
+	} else if dir == East {
+		res := m.cont[util.SerializeCoordRaw(currX+1, currY)]
+		return currX + 1, currY, dir, res
+	} else if dir == South {
+		res := m.cont[util.SerializeCoordRaw(currX, currY+1)]
+		return currX, currY + 1, dir, res
+	} else if dir == West {
+		res := m.cont[util.SerializeCoordRaw(currX-1, currY)]
+		return currX - 1, currY, dir, res
+	}
+	panic("Went out of bounds")
+}
+
+func parse(lines []string, edgeLength int) (Map, []Move, EdgeMap) {
 	theMap := Map{}
 	theMap.cont = make(map[string]Path)
 	moves := make([]Move, 0)
@@ -158,7 +190,9 @@ func parse(lines []string) (Map, []Move) {
 		}
 	}
 
-	return theMap, moves
+	edgeMap := calcEdges(theMap, edgeLength)
+
+	return theMap, moves, edgeMap
 }
 
 type Direction string
@@ -236,15 +270,34 @@ func part1(theMap Map, moves []Move) int {
 	return 1000*(y+1) + 4*(x+1) + dir.getValue()
 }
 
-func part2(theMap Map, moves []Move) int {
-	return 0
+func part2(theMap Map, moves []Move, edges EdgeMap) int {
+	x := theMap.getStartingX()
+	y := 0
+	dir := East
+
+	for _, move := range moves {
+		if move.isTurn {
+			dir = dir.doTurn(move.turn)
+		} else {
+			for step := 0; step < move.dist; step++ {
+				newX, newY, newDir, path := theMap.getNextWithEdges(x, y, dir, edges)
+				if path == Clear {
+					x = newX
+					y = newY
+					dir = newDir
+				}
+			}
+		}
+	}
+
+	return 1000*(y+1) + 4*(x+1) + dir.getValue()
 }
 
 func main() {
-	// lines := util.FileAsLines("ex1")
-	lines := util.FileAsLines("input")
-	theMap, moves := parse(lines)
+	// lines, edgeLength := util.FileAsLines("ex1"), 4
+	lines, edgeLength := util.FileAsLines("input"), 50
+	theMap, moves, edgeMap := parse(lines, edgeLength)
 
 	fmt.Println(part1(theMap, moves))
-	fmt.Println(part2(theMap, moves))
+	fmt.Println(part2(theMap, moves, edgeMap))
 }
