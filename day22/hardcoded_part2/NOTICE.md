@@ -1,1 +1,0 @@
-Yeah, I went there. I'll probably come back and solve this one in an automated way, but for now it's a hardcoded solution mostly generated with Google Sheets and a piece of paper.
