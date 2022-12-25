@@ -1,6 +1,7 @@
 package util
 
 import (
+	"math"
 	"strconv"
 	"strings"
 )
@@ -26,6 +27,10 @@ func Abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+func PowInt(x, y int) int {
+	return int(math.Pow(float64(x), float64(y)))
 }
 
 func PosMod(x int, mod int) int {
