@@ -22,3 +22,8 @@ func BenchmarkPart2(b *testing.B) {
 		part2(input)
 	}
 }
+func BenchmarkPart2Concurrent(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		part2Concurrent(input)
+	}
+}
