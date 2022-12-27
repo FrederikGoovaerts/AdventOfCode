@@ -1,6 +1,9 @@
 package util
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func Serialize(items ...any) string {
 	result := fmt.Sprint(items[0])
@@ -8,6 +11,11 @@ func Serialize(items ...any) string {
 		result += " " + fmt.Sprint(items[i])
 	}
 	return result
+}
+
+func StringToInt(in string) int {
+	res, _ := strconv.Atoi(in)
+	return res
 }
 
 func Contains[T int | string](list []T, search T) bool {
