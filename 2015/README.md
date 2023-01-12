@@ -1,6 +1,6 @@
-# 2022 solutions
+# 2015 solutions
 
-Solutions for the 2022 edition, written in Golang.
+Solutions for the 2015 edition, written in Golang.
 
 ## Running the solutions
 
