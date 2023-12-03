@@ -1,9 +1,9 @@
-export function getNeighbours(
+export function getNeighbours<T = number>(
   x: number,
   y: number,
-  field: number[][],
+  field: T[][],
   diagonally = true
-): number[] {
+): T[] {
   return getNeighboursLocs(x, y, field, diagonally).map(
     (val) => field[val[0]][val[1]]
   );
@@ -12,7 +12,7 @@ export function getNeighbours(
 export function getNeighboursLocs(
   x: number,
   y: number,
-  field: number[][],
+  field: unknown[][],
   diagonally = true
 ): [number, number][] {
   const result: [number, number][] = diagonally
