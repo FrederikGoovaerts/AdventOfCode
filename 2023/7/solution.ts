@@ -1,5 +1,6 @@
 import { asList } from "../utils/inputReader";
 const input = asList("input");
+const PART_2_MODE = true;
 
 interface HandValue {
   originalHand: string;
@@ -15,37 +16,62 @@ const cardValueMap: Record<string, number> = {
   Q: 12,
   J: 11,
   T: 10,
+  Z: 1,
 };
 
-function getTypeValue(cards: string): number {
+function sortCards(cards: string): string[] {
   const sortedCards = cards.split("").sort().join("");
-  if (/(\w)\1{4}/.test(sortedCards)) {
-    return 6;
-  } else if (/(\w)\1{3}/.test(sortedCards)) {
-    return 5;
-  } else if (
-    /(\w)\1{2}.*(\w)\2{1}/.test(sortedCards) ||
-    /(\w)\1{1}.*(\w)\2{2}/.test(sortedCards)
-  ) {
-    return 4;
-  } else if (/(\w)\1{2}/.test(sortedCards)) {
-    return 3;
-  } else if (/(\w)\1{1}.*(\w)\2{1}/.test(sortedCards)) {
-    return 2;
-  } else if (/(\w)\1{1}/.test(sortedCards)) {
-    return 1;
+  if (!sortedCards.includes("Z") || sortedCards === "ZZZZZ") {
+    return [sortedCards];
+  } else {
+    const result: string[] = [];
+    const normals = sortedCards.substring(0, sortedCards.indexOf("Z"));
+    const jokers = sortedCards.substring(sortedCards.indexOf("Z"));
+    for (let i = 1; i < normals.length; i++) {
+      result.push(normals.slice(0, i) + jokers + normals.slice(i));
+    }
+    result.push(sortedCards);
+    return result;
   }
+}
 
-  return 0;
+function getTypeValue(cards: string): number {
+  const mapType = (c: string) => {
+    if (/(\w)(?:\1|Z){4}/.test(c)) {
+      return 6;
+    } else if (/(\w)(?:\1|Z){3}/.test(c)) {
+      return 5;
+    } else if (
+      /(\w)(?:\1|Z){2}.*(\w)(?:\2|Z){1}/.test(c) ||
+      /(\w)(?:\1|Z){1}.*(\w)(?:\2|Z){2}/.test(c)
+    ) {
+      return 4;
+    } else if (/(\w)(?:\1|Z){2}/.test(c)) {
+      return 3;
+    } else if (/(\w)(?:\1|Z){1}.*(\w)(?:\2|Z){1}/.test(c)) {
+      return 2;
+    } else if (/(\w)(?:\1|Z){1}/.test(c)) {
+      return 1;
+    }
+
+    return 0;
+  };
+
+  const sortedCards = sortCards(cards);
+  const mappedValues = sortedCards.map((c) => mapType(c));
+
+  return Math.max(...mappedValues);
 }
 
 function getAbsoluteValue(cards: string): number {
+  const usedCards = PART_2_MODE ? cards.replaceAll("J", "Z") : cards;
+
   let total = 0;
 
-  total += getTypeValue(cards) * Math.pow(10, 10);
+  total += getTypeValue(usedCards) * Math.pow(10, 10);
 
   for (let i = 0; i < 5; i++) {
-    const cardVal = cardValueMap[cards[i]] ?? parseInt(cards[i]);
+    const cardVal = cardValueMap[usedCards[i]] ?? parseInt(usedCards[i]);
 
     total += cardVal * Math.pow(10, 8 - i * 2);
   }
