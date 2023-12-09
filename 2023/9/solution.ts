@@ -5,7 +5,7 @@ const input = asList("input");
 const nexts: number[] = [];
 const prevs: number[] = [];
 
-function getNext(list: number[]): number {
+function extrapolate(list: number[], mode: "NEXT" | "PREV"): number {
   if (list.every((v) => v === list[0])) {
     return list[0];
   }
@@ -15,30 +15,15 @@ function getNext(list: number[]): number {
     subList.push(list[i + 1] - list[i]);
   }
 
-  const subNext = getNext(subList);
+  const subEx = extrapolate(subList, mode);
 
-  return list.at(-1)! + subNext;
-}
-
-function getPrev(list: number[]): number {
-  if (list.every((v) => v === list[0])) {
-    return list[0];
-  }
-  const subList: number[] = [];
-
-  for (let i = 0; i < list.length - 1; i++) {
-    subList.push(list[i + 1] - list[i]);
-  }
-
-  const subPrev = getPrev(subList);
-
-  return list[0] - subPrev;
+  return mode === "NEXT" ? list.at(-1)! + subEx : list[0] - subEx;
 }
 
 for (const line of input) {
   const parsedLine = line.split(" ").map((v) => parseInt(v));
-  nexts.push(getNext(parsedLine));
-  prevs.push(getPrev(parsedLine));
+  nexts.push(extrapolate(parsedLine, "NEXT"));
+  prevs.push(extrapolate(parsedLine, "PREV"));
 }
 
 console.log(sum(nexts));
