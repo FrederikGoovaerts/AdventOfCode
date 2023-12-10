@@ -2,6 +2,7 @@ import { asList } from "../utils/inputReader";
 import {
   Direction,
   getDirectionNeighboursLocs,
+  getNeighboursLocs,
   reverseDirection,
 } from "../utils/neighbours";
 const input = asList("input");
@@ -36,39 +37,41 @@ input.forEach((line, y) => {
 });
 
 // Choose random starting direction of path
-let curr: { x: number; y: number } = { x: -1, y: -1 };
-// for (const [dir, loc] of Object.entries(
-//   getDirectionNeighboursLocs(path[0].x, path[0].y, map)
-// )) {
-//   const char = map[loc[1]][loc[0]];
-//   if (connects(char, reverseDirection(dir as Direction))) {
-//     curr = { x: loc[0], y: loc[1] };
-//     path.push(curr);
-//     break;
-//   }
-// }
-// TODO: Clean this up later to make it complete.
-// FOR INPUT THIS IS CORRECT
-curr = { x: path[0].x, y: path[0].y + 1 };
-path.push(curr);
+for (const [dir, loc] of Object.entries(
+  getDirectionNeighboursLocs(path[0].x, path[0].y, map)
+)) {
+  const dirPath: { x: number; y: number }[] = [path[0]];
+  const char = map[loc[1]][loc[0]];
+  if (!connects(char, reverseDirection(dir as Direction))) {
+    continue;
+  }
+  let curr = { x: loc[0], y: loc[1] };
+  dirPath.push(curr);
 
-let expanded = true;
-while (expanded) {
-  expanded = false;
-  for (const [dir, loc] of Object.entries(
-    getDirectionNeighboursLocs(curr.x, curr.y, map)
-  )) {
-    const char = map[loc[1]][loc[0]];
-    if (
-      connects(map[curr.y][curr.x], dir as Direction) &&
-      connects(char, reverseDirection(dir as Direction)) &&
-      !path.some((p) => p.x === loc[0] && p.y === loc[1])
-    ) {
-      curr = { x: loc[0], y: loc[1] };
-      path.push(curr);
-      expanded = true;
-      break;
+  let expanded = true;
+
+  while (expanded) {
+    expanded = false;
+    for (const [dir, loc] of Object.entries(
+      getDirectionNeighboursLocs(curr.x, curr.y, map)
+    )) {
+      const char = map[loc[1]][loc[0]];
+      if (
+        connects(map[curr.y][curr.x], dir as Direction) &&
+        connects(char, reverseDirection(dir as Direction)) &&
+        !dirPath.some((p) => p.x === loc[0] && p.y === loc[1])
+      ) {
+        curr = { x: loc[0], y: loc[1] };
+        dirPath.push(curr);
+        expanded = true;
+        break;
+      }
     }
+  }
+
+  if (dirPath.length > path.length) {
+    path.length = 0;
+    path.push(...dirPath);
   }
 }
 
@@ -181,10 +184,23 @@ for (
   last = currPathElem;
 }
 
+// Flood fill I
+for (let y = 0; y < map.length; y++) {
+  for (let x = 0; x < map[0].length; x++) {
+    if (cleanMap[y][x] === "I") {
+      for (const [xN, yN] of getNeighboursLocs(x, y, cleanMap, false)) {
+        if (cleanMap[yN][xN] === ".") {
+          cleanMap[yN][xN] = "I";
+        }
+      }
+    }
+  }
+}
+
 let iCount = 0;
 for (let y = 0; y < map.length; y++) {
-  console.log(cleanMap[y].join(""));
+  // This can be used to visually debug
+  // console.log(cleanMap[y].join(""));
   iCount += cleanMap[y].filter((v) => v === "I").length;
 }
-console.log(iCount, "(Currently not floodfilled)");
-// 567 with some manual checks lol
+console.log(iCount);
