@@ -40,7 +40,7 @@ const partNumbers: number[] = [];
 for (const num of numbers) {
   let isPart = false;
   for (let i = num.xStart; i <= num.xEnd; i++) {
-    const neigbours = getNeighbours(num.y, i, board, true);
+    const neigbours = getNeighbours(i, num.y, board, true);
     if (neigbours.some((ne) => !/\d|\./.test(ne))) {
       isPart = true;
       break;
@@ -56,10 +56,10 @@ console.log(sum(partNumbers));
 const ratios = [];
 
 for (const gear of gears) {
-  const neighbourLocs = getNeighboursLocs(gear.y, gear.x, board, true);
+  const neighbourLocs = getNeighboursLocs(gear.x, gear.y, board, true);
   const touchingNumbers = numbers.filter((nu) =>
     neighbourLocs.some(
-      (ne) => ne[0] === nu.y && ne[1] >= nu.xStart && ne[1] <= nu.xEnd
+      (ne) => ne.y === nu.y && ne.x >= nu.xStart && ne.x <= nu.xEnd
     )
   );
   if (touchingNumbers.length === 2) {

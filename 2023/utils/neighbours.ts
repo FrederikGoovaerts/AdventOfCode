@@ -20,7 +20,7 @@ export function getNeighbours<T = number>(
   diagonally = true
 ): T[] {
   return getNeighboursLocs(x, y, field, diagonally).map(
-    (val) => field[val[0]][val[1]]
+    (val) => field[val.y][val.x]
   );
 }
 
@@ -29,22 +29,22 @@ export function getDirectionNeighboursLocs(
   y: number,
   field: unknown[][],
   diagonally = false
-): Partial<Record<Direction, [number, number]>> {
+): Partial<Record<Direction, { x: number; y: number }>> {
   if (diagonally) {
     throw new Error("You haven't implemented this yet");
   }
 
-  const all: Record<Direction, [number, number]> = {
-    down: [x, y + 1],
-    right: [x + 1, y],
-    left: [x - 1, y],
-    up: [x, y - 1],
+  const all: Record<Direction, { x: number; y: number }> = {
+    down: { x: x, y: y + 1 },
+    right: { x: x + 1, y: y },
+    left: { x: x - 1, y: y },
+    up: { x: x, y: y - 1 },
   };
 
-  const result: Partial<Record<Direction, [number, number]>> = {};
-  for (const entry of Object.entries(all)) {
-    if (field[entry[1][1]]?.[entry[1][0]] !== undefined) {
-      result[entry[0] as Direction] = entry[1];
+  const result: Partial<Record<Direction, { x: number; y: number }>> = {};
+  for (const [direction, neighbour] of Object.entries(all)) {
+    if (field[neighbour.y]?.[neighbour.x] !== undefined) {
+      result[direction as Direction] = neighbour;
     }
   }
 
@@ -56,24 +56,24 @@ export function getNeighboursLocs(
   y: number,
   field: unknown[][],
   diagonally = true
-): [number, number][] {
-  const result: [number, number][] = diagonally
+): { x: number; y: number }[] {
+  const result: { x: number; y: number }[] = diagonally
     ? [
-        [x - 1, y - 1],
-        [x - 1, y],
-        [x - 1, y + 1],
-        [x, y - 1],
-        [x, y + 1],
-        [x + 1, y - 1],
-        [x + 1, y],
-        [x + 1, y + 1],
+        { x: x - 1, y: y - 1 },
+        { x: x - 1, y: y },
+        { x: x - 1, y: y + 1 },
+        { x: x, y: y - 1 },
+        { x: x, y: y + 1 },
+        { x: x + 1, y: y - 1 },
+        { x: x + 1, y: y },
+        { x: x + 1, y: y + 1 },
       ]
     : [
-        [x, y + 1],
-        [x + 1, y],
-        [x - 1, y],
-        [x, y - 1],
+        { x: x, y: y + 1 },
+        { x: x + 1, y: y },
+        { x: x - 1, y: y },
+        { x: x, y: y - 1 },
       ];
 
-  return result.filter((val) => field[val[0]]?.[val[1]] !== undefined);
+  return result.filter((val) => field[val.y]?.[val.x] !== undefined);
 }

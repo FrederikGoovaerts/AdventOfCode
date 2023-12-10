@@ -41,11 +41,11 @@ for (const [dir, loc] of Object.entries(
   getDirectionNeighboursLocs(path[0].x, path[0].y, map)
 )) {
   const dirPath: { x: number; y: number }[] = [path[0]];
-  const char = map[loc[1]][loc[0]];
+  const char = map[loc.y][loc.x];
   if (!connects(char, reverseDirection(dir as Direction))) {
     continue;
   }
-  let curr = { x: loc[0], y: loc[1] };
+  let curr = loc;
   dirPath.push(curr);
 
   let expanded = true;
@@ -55,13 +55,13 @@ for (const [dir, loc] of Object.entries(
     for (const [dir, loc] of Object.entries(
       getDirectionNeighboursLocs(curr.x, curr.y, map)
     )) {
-      const char = map[loc[1]][loc[0]];
+      const char = map[loc.y][loc.x];
       if (
         connects(map[curr.y][curr.x], dir as Direction) &&
         connects(char, reverseDirection(dir as Direction)) &&
-        !dirPath.some((p) => p.x === loc[0] && p.y === loc[1])
+        !dirPath.some((p) => p.x === loc.x && p.y === loc.y)
       ) {
-        curr = { x: loc[0], y: loc[1] };
+        curr = loc;
         dirPath.push(curr);
         expanded = true;
         break;
@@ -188,9 +188,9 @@ for (
 for (let y = 0; y < map.length; y++) {
   for (let x = 0; x < map[0].length; x++) {
     if (cleanMap[y][x] === "I") {
-      for (const [xN, yN] of getNeighboursLocs(x, y, cleanMap, false)) {
-        if (cleanMap[yN][xN] === ".") {
-          cleanMap[yN][xN] = "I";
+      for (const n of getNeighboursLocs(x, y, cleanMap, false)) {
+        if (cleanMap[n.y][n.x] === ".") {
+          cleanMap[n.y][n.x] = "I";
         }
       }
     }
