@@ -43,7 +43,7 @@ export function getDirectionNeighboursLocs(
 
   const result: Partial<Record<Direction, [number, number]>> = {};
   for (const entry of Object.entries(all)) {
-    if (field[entry[1][0]]?.[entry[1][1]] !== undefined) {
+    if (field[entry[1][1]]?.[entry[1][0]] !== undefined) {
       result[entry[0] as Direction] = entry[1];
     }
   }
