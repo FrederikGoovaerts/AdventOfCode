@@ -1,103 +1,94 @@
 import { sum } from "lodash";
 import { asList } from "../utils/inputReader";
-const input = asList("ex1");
+const input = asList("ex2");
 
-function replaceAt(input: string, i: number, char: string): string {
-  if (i > input.length - 1) {
-    return input;
-  }
-  return input.substring(0, i) + char + input.substring(i + 1);
-}
-
-function createResult(
-  vis: string,
-  numbers: string,
-  choices: number[]
-): string[] {
-  let newVis = vis;
-  for (const choice of choices) {
-    newVis = replaceAt(newVis, choice, "#");
-  }
-  newVis = newVis.replaceAll("?", ".");
-
-  const newVisNumberString = newVis
-    .split(".")
-    .filter((v) => v !== "")
-    .map((v) => v.length)
-    .join(",");
-
-  if (newVisNumberString === numbers) {
-    return [vis];
-  } else {
-    return [];
-  }
-}
+const marker = "V";
 
 function getArrangementsRec(
-  remaining: number,
-  options: number[],
-  optionsIndex: number,
-  choices: number[],
   vis: string,
-  numbers: string
-): string[] {
-  if (remaining > options.length - optionsIndex) {
-    return [];
-  } else if (remaining === 0) {
-    return createResult(vis, numbers, choices);
+  remainingNumbers: {
+    val: number;
+    position?: number;
+    spaceBefore: number;
+    spaceAfter: number;
+  }[]
+): number {
+  if (remainingNumbers.length === 0) {
+    if (vis.split("").includes("#")) {
+      return 0;
+    }
+    return 1;
   }
 
-  const results: string[] = [];
-  for (let i = optionsIndex; i < options.length; i++) {
-    results.push(
-      ...getArrangementsRec(
-        remaining - 1,
-        options,
-        i + 1,
-        [...choices, options[i]],
-        vis,
-        numbers
-      )
-    );
-  }
+  const nextNumber = remainingNumbers[0];
+  let result = 0;
 
-  return results;
-}
+  for (
+    let i = Math.max(nextNumber.spaceBefore, vis.lastIndexOf("V") + 1);
+    i <= vis.length - (nextNumber.val + nextNumber.spaceAfter);
+    i++
+  ) {
+    const place = vis.slice(i, i + nextNumber.val);
+    const before = vis[i - 1];
+    const after = vis[i + nextNumber.val];
+    if (
+      !place.includes(".") &&
+      !place.includes(marker) &&
+      !["#", marker].includes(before) &&
+      !["#", marker].includes(after)
+    ) {
+      const updated =
+        vis.slice(0, i) +
+        "".padStart(nextNumber.val, marker) +
+        vis.slice(i + nextNumber.val);
 
-function getArrangements(vis: string, numbers: string): string[] {
-  const totalBroken = sum(numbers.split(",").map((v) => parseInt(v)));
-  const totalBrokenVisible = vis.split("").filter((v) => v === "#").length;
-  const options: number[] = [];
-  for (let i = 0; i < vis.length; i++) {
-    if (vis[i] === "?") {
-      options.push(i);
+      const subRes = getArrangementsRec(updated, remainingNumbers.slice(1));
+
+      result += subRes;
     }
   }
 
-  return getArrangementsRec(
-    totalBroken - totalBrokenVisible,
-    options,
-    0,
-    [],
-    vis,
-    numbers
-  );
+  return result;
 }
 
-const arrangementsList: string[][] = [];
+function getArrangements(vis: string, rawNumbers: string): number {
+  const rawNumbersList = rawNumbers.split(",").map((n) => parseInt(n));
+  const numbers: {
+    val: number;
+    position?: number;
+    spaceBefore: number;
+    spaceAfter: number;
+  }[] = [];
+
+  for (let i = 0; i < rawNumbersList.length; i++) {
+    const numbersBefore = rawNumbersList.slice(0, i);
+    const numbersAfter = rawNumbersList.slice(i + 1);
+    numbers.push({
+      val: rawNumbersList[i],
+      spaceBefore: sum(numbersBefore) + numbersBefore.length,
+      spaceAfter: sum(numbersAfter) + numbersAfter.length,
+    });
+  }
+
+  return getArrangementsRec(vis, numbers);
+}
+
+let part1Result = 0;
 
 for (const line of input) {
   const [vis, rawNumbers] = line.split(" ");
   const arr = getArrangements(vis, rawNumbers);
 
-  arrangementsList.push(arr);
+  part1Result += arr;
 }
 
-console.log(sum(arrangementsList.map((a) => a.length)));
+console.log(part1Result);
 
-const largeArrangementsList: string[][] = [];
+let part2Result = 0;
+let count = 0;
 
 for (const line of input) {
+  console.log(++count);
   const [vis, rawNumbers] = line.split(" ");
 
   let fullVis = "";
@@ -114,7 +105,7 @@ for (const line of input) {
 
   const arr = getArrangements(fullVis, fullRawNumbers);
 
-  largeArrangementsList.push(arr);
+  part2Result += arr;
 }
 
-console.log(sum(largeArrangementsList.map((a) => a.length)));
+console.log(part2Result);
