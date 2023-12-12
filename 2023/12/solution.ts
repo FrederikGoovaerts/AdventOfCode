@@ -1,6 +1,6 @@
 import { sum } from "lodash";
 import { asList } from "../utils/inputReader";
-const input = asList("ex1");
+const input = asList("input");
 
 const globalMap = new Map<string, number>();
 
@@ -40,9 +40,18 @@ function getArrangementsRec(vis: string, numbers: number[]): number {
 
     for (let i = 0; i <= vis.length - n; i++) {
       const place = vis.slice(i, i + n);
-      const before = vis[i - 1];
-      const after = vis[i + n];
-      if (!place.includes(".") && before !== "#" && after !== "#") {
+
+      const a = Math.max(i, 0);
+      const beforeVisSlice = vis.slice(0, a);
+
+      const b = Math.min(i + n, vis.length);
+      const afterVisSlice = vis.slice(b);
+
+      if (
+        !place.includes(".") &&
+        !beforeVisSlice.includes("#") &&
+        !afterVisSlice.includes("#")
+      ) {
         result += 1;
       }
     }
@@ -57,21 +66,30 @@ function getArrangementsRec(vis: string, numbers: number[]): number {
 
   let result = 0;
 
-  // TODO: if there's an off by one, it's here
-  for (let i = bAndA.before; i < vis.length - (nextNumber + bAndA.after); i++) {
+  for (
+    let i = bAndA.before;
+    i <= vis.length - (nextNumber + bAndA.after);
+    i++
+  ) {
     const place = vis.slice(i, i + nextNumber);
     const before = vis[i - 1];
     const after = vis[i + nextNumber];
     if (!place.includes(".") && before !== "#" && after !== "#") {
-      const beforeVisSlice = vis.slice(0, i);
+      let localResult = 1;
+
+      const a = Math.max(i - 1, 0);
+      const beforeVisSlice = vis.slice(0, a);
       const beforeNumSlice = numbers.slice(0, nextNumberIndex);
 
-      result += getArrangementsRec(beforeVisSlice, beforeNumSlice);
+      localResult *= getArrangementsRec(beforeVisSlice, beforeNumSlice);
 
-      const afterVisSlice = vis.slice(i + nextNumber);
+      const b = Math.min(i + nextNumber + 1, vis.length);
+      const afterVisSlice = vis.slice(b);
       const afterNumSlice = numbers.slice(nextNumberIndex + 1);
 
-      result += getArrangementsRec(afterVisSlice, afterNumSlice);
+      localResult *= getArrangementsRec(afterVisSlice, afterNumSlice);
+
+      result += localResult;
     }
   }
 
@@ -81,22 +99,6 @@ function getArrangementsRec(vis: string, numbers: number[]): number {
 
 function getArrangements(vis: string, rawNumbers: string): number {
   const rawNumbersList = rawNumbers.split(",").map((n) => parseInt(n));
-  // const numbers: {
-  //   val: number;
-  //   position?: number;
-  //   spaceBefore: number;
-  //   spaceAfter: number;
-  // }[] = [];
-
-  // for (let i = 0; i < rawNumbersList.length; i++) {
-  //   const numbersBefore = rawNumbersList.slice(0, i);
-  //   const numbersAfter = rawNumbersList.slice(i + 1);
-  //   numbers.push({
-  //     val: rawNumbersList[i],
-  //     spaceBefore: sum(numbersBefore) + numbersBefore.length,
-  //     spaceAfter: sum(numbersAfter) + numbersAfter.length,
-  //   });
-  // }
 
   return getArrangementsRec(vis, rawNumbersList);
 }
