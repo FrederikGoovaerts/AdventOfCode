@@ -14,3 +14,8 @@ export const asList = (fileName: string = "input"): string[] =>
 
 export const asNumberList = (fileName: string = "input"): number[] =>
   asList(fileName).map(Number);
+
+export const as2d = (fileName: string = "input"): string[][] =>
+  asIs(fileName)
+    .split("\n")
+    .map((line) => line.split(""));

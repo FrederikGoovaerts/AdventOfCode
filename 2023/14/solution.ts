@@ -1,6 +1,6 @@
 import { cloneDeep, isEqual } from "lodash";
-import { asList } from "../utils/inputReader";
-const input = asList("input").map((line) => line.split(""));
+import { as2d } from "../utils/inputReader";
+const input = as2d("input");
 const CYCLE_TOTAL = 1_000_000_000;
 
 const part1Map = cloneDeep(input);
