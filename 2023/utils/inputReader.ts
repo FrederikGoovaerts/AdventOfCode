@@ -19,3 +19,8 @@ export const as2d = (fileName: string = "input"): string[][] =>
   asIs(fileName)
     .split("\n")
     .map((line) => line.split(""));
+
+export const as2dNumbers = (fileName: string = "input"): number[][] =>
+  asIs(fileName)
+    .split("\n")
+    .map((line) => line.split("").map((v) => parseInt(v)));
