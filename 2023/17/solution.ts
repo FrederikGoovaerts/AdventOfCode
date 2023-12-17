@@ -40,6 +40,9 @@ function getMinHeatLoss(
   while (nodes.size() > 0) {
     const curr = nodes.removeMin()!;
     if (curr.x === goal.x && curr.y === goal.y) {
+      if (minSteps !== undefined && curr.ldstep < minSteps) {
+        continue;
+      }
       return curr.loss;
     }
     const ns = getDirectionNeighboursLocs(curr.x, curr.y, input, false);
