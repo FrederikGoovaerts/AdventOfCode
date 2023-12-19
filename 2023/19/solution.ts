@@ -1,4 +1,4 @@
-import { sum } from "lodash";
+import { cloneDeep, sum } from "lodash";
 import { asList } from "../utils/inputReader";
 
 const input = asList("input");
@@ -10,10 +10,18 @@ interface Metal {
   s: number;
 }
 
-interface Rule {
-  check: (val: Metal) => boolean;
-  target: string;
-}
+type Rule =
+  | {
+      check: (val: Metal) => boolean;
+      property: keyof Metal;
+      num: number;
+      condition: "<" | ">";
+      target: string;
+    }
+  | {
+      condition: "free";
+      target: string;
+    };
 
 interface Workflow {
   name: string;
@@ -42,9 +50,15 @@ for (const line of input) {
               ? (m: Metal) => m[property] > num
               : (m: Metal) => m[property] < num;
 
-          return { target, check };
+          return {
+            target,
+            property,
+            num,
+            condition: rawCheck[1] as "<" | ">",
+            check,
+          };
         } else {
-          return { check: () => true, target: rawRule };
+          return { condition: "free", target: rawRule };
         }
       }),
     };
@@ -61,6 +75,18 @@ for (const line of input) {
   }
 }
 
+//Simplify workflows step
+
+for (const w of Object.values(workflows)) {
+  while (
+    w.rules.length > 1 &&
+    w.rules.at(-1)!.target === w.rules.at(-2)!.target
+  ) {
+    const last = w.rules.pop()!;
+    w.rules[w.rules.length - 1] = last;
+  }
+}
+
 const accepted: Metal[] = [];
 
 for (const m of metals) {
@@ -68,7 +94,7 @@ for (const m of metals) {
   while (currWorkFlow !== "A" && currWorkFlow !== "R") {
     const w = workflows[currWorkFlow];
     for (const rule of w.rules) {
-      if (rule.check(m)) {
+      if (rule.condition === "free" || rule.check(m)) {
         currWorkFlow = rule.target;
         break;
       }
@@ -81,3 +107,79 @@ for (const m of metals) {
 }
 
 console.log(sum(accepted.map((m) => m.x + m.m + m.a + m.s)));
+
+interface MetalInterval {
+  xStart: number;
+  xEnd: number;
+  mStart: number;
+  mEnd: number;
+  aStart: number;
+  aEnd: number;
+  sStart: number;
+  sEnd: number;
+}
+
+function recursiveGetConfigurations(
+  interval: MetalInterval,
+  currWorkFlow: string
+): number {
+  if (currWorkFlow === "R") {
+    return 0;
+  } else if (currWorkFlow === "A") {
+    return (
+      (interval.xEnd - interval.xStart + 1) *
+      (interval.mEnd - interval.mStart + 1) *
+      (interval.aEnd - interval.aStart + 1) *
+      (interval.sEnd - interval.sStart + 1)
+    );
+  }
+
+  const w = workflows[currWorkFlow];
+
+  let result = 0;
+  const currentInterval = cloneDeep(interval);
+
+  for (const r of w.rules) {
+    if (r.condition === "free") {
+      result += recursiveGetConfigurations(currentInterval, r.target);
+    } else if (r.condition === "<") {
+      const propertyStartKey = (r.property + "Start") as keyof MetalInterval;
+      if (currentInterval[propertyStartKey] < r.num) {
+        const propertyEndKey = (r.property + "End") as keyof MetalInterval;
+        const recInterval = { ...currentInterval };
+        recInterval[propertyEndKey] = r.num - 1;
+        result += recursiveGetConfigurations(recInterval, r.target);
+
+        currentInterval[propertyStartKey] = r.num;
+      }
+    } else {
+      const propertyEndKey = (r.property + "End") as keyof MetalInterval;
+      if (currentInterval[propertyEndKey] > r.num) {
+        const propertyStartKey = (r.property + "Start") as keyof MetalInterval;
+        const recInterval = { ...currentInterval };
+        recInterval[propertyStartKey] = r.num + 1;
+        result += recursiveGetConfigurations(recInterval, r.target);
+
+        currentInterval[propertyEndKey] = r.num;
+      }
+    }
+  }
+
+  return result;
+}
+
+console.log(
+  recursiveGetConfigurations(
+    {
+      xStart: 1,
+      xEnd: 4000,
+      mStart: 1,
+      mEnd: 4000,
+      aStart: 1,
+      aEnd: 4000,
+      sStart: 1,
+      sEnd: 4000,
+    },
+    "in"
+  )
+);
