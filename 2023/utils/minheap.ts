@@ -1,3 +1,5 @@
+import { isEqual } from "lodash";
+
 export class MinHeap<T> {
   private heap: T[];
   private compare: (a: T, b: T) => number;
@@ -9,6 +11,15 @@ export class MinHeap<T> {
 
   size(): number {
     return this.heap.length;
+  }
+
+  has(value: T): boolean {
+    for (const el of this.heap) {
+      if (isEqual(el, value)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   insert(value: T) {
