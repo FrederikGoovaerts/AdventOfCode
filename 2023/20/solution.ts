@@ -61,6 +61,7 @@ interface Pulse {
   origin: string;
   target: string;
   state: boolean;
+  pt: number;
 }
 
 const part1State = cloneDeep(moduleMap);
@@ -68,14 +69,19 @@ const part1State = cloneDeep(moduleMap);
 function pushButton(state: Record<string, module>): {
   highs: number;
   lows: number;
-  rxPulses: boolean[];
+  lgLowPulses: { o: string; pt: number }[];
 } {
   let highs = 0;
   let lows = 0;
-  const rxPulses: boolean[] = [];
+  const lgHighPulses: { o: string; pt: number }[] = [];
 
   const pulses: Queue<Pulse> = new Queue();
-  pulses.enqueue({ target: "broadcaster", state: false, origin: "button" });
+  pulses.enqueue({
+    target: "broadcaster",
+    state: false,
+    origin: "button",
+    pt: 0,
+  });
 
   while (!pulses.isEmpty()) {
     const nextPulse = pulses.dequeue()!;
@@ -86,8 +92,8 @@ function pushButton(state: Record<string, module>): {
       lows++;
     }
 
-    if (nextPulse.target === "rx") {
-      rxPulses.push(nextPulse.state);
+    if (nextPulse.target === "lg" && nextPulse.state) {
+      lgHighPulses.push({ o: nextPulse.origin, pt: nextPulse.pt });
     }
 
     const pulseTarget = state[nextPulse.target];
@@ -97,6 +103,7 @@ function pushButton(state: Record<string, module>): {
           origin: nextPulse.target,
           target: t,
           state: nextPulse.state,
+          pt: nextPulse.pt + 1,
         });
       }
     } else if (pulseTarget.type === "ff") {
@@ -107,6 +114,7 @@ function pushButton(state: Record<string, module>): {
             origin: nextPulse.target,
             target: t,
             state: pulseTarget.state,
+            pt: nextPulse.pt + 1,
           });
         }
       }
@@ -122,12 +130,13 @@ function pushButton(state: Record<string, module>): {
           origin: nextPulse.target,
           target: t,
           state: outPulseState,
+          pt: nextPulse.pt + 1,
         });
       }
     }
   }
 
-  return { highs, lows, rxPulses };
+  return { highs, lows, lgLowPulses: lgHighPulses };
 }
 const highs: number[] = [];
 const lows: number[] = [];
@@ -142,10 +151,18 @@ console.log(sum(highs) * sum(lows));
 
 const part2State = cloneDeep(moduleMap);
 
-for (let i = 1; ; i++) {
+const vals: Record<string, number[]> = {
+  nb: [],
+  ls: [],
+  vc: [],
+  vg: [],
+};
+
+for (let i = 1; i < 1_000_000; i++) {
   const result = pushButton(part2State);
-  if (result.rxPulses.includes(false)) {
-    console.log(i, result.rxPulses);
-    break;
+  if (result.lgLowPulses.length > 0) {
+    vals[result.lgLowPulses[0].o].push(i);
   }
 }
+
+console.log(vals.nb[0] * vals.ls[0] * vals.vc[0] * vals.vg[0]);

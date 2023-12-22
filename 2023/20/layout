@@ -1,0 +1,63 @@
+broadcaster -> sj, sr, tp, nk
+
+%sj -> kj, rb
+    %kj -> fk
+    &rb -> vc, zs, fk, hq, rt, sj, kj
+        %zs -> ct
+            %ct -> rt, rb
+        %fk -> xh
+            %xh -> zs, rb
+        %hq -> bb
+            %bb -> kf, rb
+                %kf -> rb, ph
+                    %ph -> rb, hx
+                        %hx -> rb
+        %rt -> hq
+        &vc -> lg
+
+%sr -> vs, ml
+    %vs -> tq, ml
+    &ml -> kp, sr, tq, nb, tk, sh, vk
+        %kp -> vk
+        %tq -> jm
+            %jm -> ml, kp
+        %vk -> tk
+        %tk -> sh
+        %sh -> zk
+            %zk -> ml, ps
+                %ps -> qz, ml
+                    %qz -> ml, kh
+                        %kh -> ml
+        &nb -> lg
+
+%tp -> gp, lx
+    %lx -> ff, gp
+    &gp -> df, ls, mq, tp, nv
+        %ff -> gp, df
+        %df -> nv
+        %mq -> pr
+            %pr -> gp, pf
+                %pf -> gp, nt
+                    %nt -> gs, gp
+                        %gs -> gp
+        %nv -> xm
+            %xm -> gp, cq
+                %cq -> gp, mq
+        &ls -> lg
+
+%nk -> nn, bt
+    %nn -> xf, bt
+    &bt -> tl, nk, pb, xf, vg
+        %xf -> qr
+            %qr -> bt, zt
+                %zt -> pb, bt
+        %tl -> bn
+            %bn -> sv, bt
+                %sv -> dx, bt
+                    %dx -> bt, tz
+                        %tz -> bt
+        %pb -> kq
+            %kq -> tl, bt
+        &vg -> lg
+
+&lg -> rx
