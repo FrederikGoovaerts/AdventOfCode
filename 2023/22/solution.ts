@@ -1,3 +1,4 @@
+import { sum } from "lodash";
 import { asList } from "../utils/inputReader";
 
 const input = asList("input");
@@ -105,12 +106,49 @@ for (let z = 2; z <= maxKnownZ; z++) {
   }
 }
 
-let dCount = 0;
+let disintegrateCount = 0;
 
 for (const b of bricks.keys()) {
   if (![...restsOn.values()].some((r) => r.length === 1 && r[0] === b)) {
-    dCount++;
+    disintegrateCount++;
   }
 }
 
-console.log(dCount);
+console.log(disintegrateCount);
+
+const supports = new Map<number, number[]>();
+
+for (const [block, support] of restsOn.entries()) {
+  for (const s of support) {
+    const supportList = supports.get(s) ?? [];
+    supportList.push(block);
+    supports.set(s, supportList);
+  }
+}
+
+const dropCount = new Map<number, number>();
+
+for (const b of bricks.keys()) {
+  const droppedBricks = new Set<number>([b]);
+  let lastCount = -1;
+  while (lastCount !== droppedBricks.size) {
+    lastCount = droppedBricks.size;
+    for (const droppedBrick of droppedBricks) {
+      const supportedBricks = supports.get(droppedBrick) ?? [];
+
+      for (const supportedBrick of supportedBricks) {
+        if (!droppedBricks.has(supportedBrick)) {
+          const restsOnForSupportedBrick = restsOn.get(supportedBrick)!;
+          if (restsOnForSupportedBrick.every((r) => droppedBricks.has(r))) {
+            droppedBricks.add(supportedBrick);
+          }
+        }
+      }
+    }
+  }
+  droppedBricks.delete(b);
+
+  dropCount.set(b, droppedBricks.size);
+}
+
+console.log(sum([...dropCount.values()]));
