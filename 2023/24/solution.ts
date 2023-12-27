@@ -69,3 +69,82 @@ for (let s1i = 0; s1i < stones.length; s1i++) {
   }
 }
 console.log(crossCount);
+
+function hits(a: Stone, b: Stone): boolean {
+  if (a.vx === b.vx) {
+    return a.x === b.x;
+  }
+  const xHitTime = (b.x - a.x) / (a.vx - b.vx);
+  if (xHitTime < 0) {
+    return false;
+  }
+
+  return (
+    a.y + xHitTime * a.vy === b.y + xHitTime * b.vy &&
+    a.z + xHitTime * a.vz === b.z + xHitTime * b.vz
+  );
+}
+
+const firstReference = stones[0];
+const secondReference = stones.find(
+  (s) => s !== firstReference && !hits(firstReference, s)
+)!;
+
+let done = false;
+for (let t1 = 1; !done; t1++) {
+  for (let t2 = 0; t2 < t1; t2++) {
+    const candidateOne = constructStone(
+      t2,
+      t1,
+      firstReference,
+      secondReference
+    );
+    if (candidateOne && stones.every((s) => hits(s, candidateOne))) {
+      console.log(candidateOne);
+      done = true;
+    } else {
+      const candidateTwo = constructStone(
+        t2,
+        t1,
+        firstReference,
+        secondReference
+      );
+      if (candidateTwo && stones.every((s) => hits(s, candidateTwo))) {
+        console.log(candidateTwo);
+        done = true;
+      }
+    }
+  }
+}
+
+function constructStone(
+  tFirst: number,
+  tSecond: number,
+  first: Stone,
+  second: Stone
+): Stone | undefined {
+  const firstPos = {
+    x: first.x + tFirst * first.vx,
+    y: first.y + tFirst * first.vy,
+    z: first.z + tFirst * first.vz,
+  };
+  const secondPos = {
+    x: second.x + tSecond * second.vx,
+    y: second.y + tSecond * second.vy,
+    z: second.z + tSecond * second.vz,
+  };
+  const vx = (secondPos.x - firstPos.x) / (tSecond - tFirst);
+  const vy = (secondPos.y - firstPos.y) / (tSecond - tFirst);
+  const vz = (secondPos.z - firstPos.z) / (tSecond - tFirst);
+  if (Number.isInteger(vx) && Number.isInteger(vy) && Number.isInteger(vz)) {
+    return {
+      x: first.x - vx * tFirst,
+      y: first.y - vy * tFirst,
+      z: first.z - vz * tFirst,
+      vx,
+      vy,
+      vz,
+    };
+  }
+  return undefined;
+}
