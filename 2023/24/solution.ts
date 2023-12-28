@@ -1,4 +1,5 @@
 import { asList } from "../utils/inputReader";
+import { init as z3init } from "z3-solver";
 
 // const [low, high, input] = [7, 27, asList("ex1")];
 const [low, high, input] = [200000000000000, 400000000000000, asList("input")];
@@ -70,81 +71,55 @@ for (let s1i = 0; s1i < stones.length; s1i++) {
 }
 console.log(crossCount);
 
-function hits(a: Stone, b: Stone): boolean {
-  if (a.vx === b.vx) {
-    return a.x === b.x;
-  }
-  const xHitTime = (b.x - a.x) / (a.vx - b.vx);
-  if (xHitTime < 0) {
-    return false;
-  }
+async function solvePart2(): Promise<void> {
+  const { Context } = await z3init();
+  const z3 = Context("main");
+  const solver = new z3.Solver();
 
-  return (
-    a.y + xHitTime * a.vy === b.y + xHitTime * b.vy &&
-    a.z + xHitTime * a.vz === b.z + xHitTime * b.vz
-  );
-}
+  const x = z3.Int.const("x");
+  const y = z3.Int.const("y");
+  const z = z3.Int.const("z");
+  const vx = z3.Int.const("vx");
+  const vy = z3.Int.const("vy");
+  const vz = z3.Int.const("vz");
 
-const firstReference = stones[0];
-const secondReference = stones.find(
-  (s) => s !== firstReference && !hits(firstReference, s)
-)!;
+  for (let i = 0; i < stones.length; i++) {
+    const stone0 = stones[i];
+    const xStone = z3.Int.const("x_" + i);
+    const yStone = z3.Int.const("y_" + i);
+    const zStone = z3.Int.const("z_" + i);
+    const vxStone = z3.Int.const("vx_" + i);
+    const vyStone = z3.Int.const("vy_" + i);
+    const vzStone = z3.Int.const("vz_" + i);
+    const tStone = z3.Int.const("t_" + i);
 
-let done = false;
-for (let t1 = 1; !done; t1++) {
-  for (let t2 = 0; t2 < t1; t2++) {
-    const candidateOne = constructStone(
-      t2,
-      t1,
-      firstReference,
-      secondReference
+    solver.add(
+      z3.And(
+        xStone.eq(stone0.x),
+        yStone.eq(stone0.y),
+        zStone.eq(stone0.z),
+        vxStone.eq(stone0.vx),
+        vyStone.eq(stone0.vy),
+        vzStone.eq(stone0.vz)
+      )
     );
-    if (candidateOne && stones.every((s) => hits(s, candidateOne))) {
-      console.log(candidateOne);
-      done = true;
-    } else {
-      const candidateTwo = constructStone(
-        t2,
-        t1,
-        firstReference,
-        secondReference
-      );
-      if (candidateTwo && stones.every((s) => hits(s, candidateTwo))) {
-        console.log(candidateTwo);
-        done = true;
-      }
-    }
+
+    solver.add(
+      z3.And(
+        x.add(vx.mul(tStone)).eq(xStone.add(vxStone.mul(tStone))),
+        y.add(vy.mul(tStone)).eq(yStone.add(vyStone.mul(tStone))),
+        z.add(vz.mul(tStone)).eq(zStone.add(vzStone.mul(tStone)))
+      )
+    );
   }
+
+  await solver.check();
+
+  const xRes = parseInt(solver.model().eval(x).toString());
+  const yRes = parseInt(solver.model().eval(y).toString());
+  const zRes = parseInt(solver.model().eval(z).toString());
+  console.log(xRes + yRes + zRes);
+  process.exit(0);
 }
 
-function constructStone(
-  tFirst: number,
-  tSecond: number,
-  first: Stone,
-  second: Stone
-): Stone | undefined {
-  const firstPos = {
-    x: first.x + tFirst * first.vx,
-    y: first.y + tFirst * first.vy,
-    z: first.z + tFirst * first.vz,
-  };
-  const secondPos = {
-    x: second.x + tSecond * second.vx,
-    y: second.y + tSecond * second.vy,
-    z: second.z + tSecond * second.vz,
-  };
-  const vx = (secondPos.x - firstPos.x) / (tSecond - tFirst);
-  const vy = (secondPos.y - firstPos.y) / (tSecond - tFirst);
-  const vz = (secondPos.z - firstPos.z) / (tSecond - tFirst);
-  if (Number.isInteger(vx) && Number.isInteger(vy) && Number.isInteger(vz)) {
-    return {
-      x: first.x - vx * tFirst,
-      y: first.y - vy * tFirst,
-      z: first.z - vz * tFirst,
-      vx,
-      vy,
-      vz,
-    };
-  }
-  return undefined;
-}
+void solvePart2();
