@@ -38,6 +38,9 @@ for (const line of input) {
   }
 }
 
+// Added later to make the thing go fast. In the regular input order, the non-exhaustive search takes ~30s
+singleConnections.sort().reverse();
+
 function shortestPath(
   source: string,
   target: string,
