@@ -1,0 +1,28 @@
+{
+  "name": "adventofcode2023",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "rimraf src/**/*.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "build": "npm run clean && tsc"
+  },
+  "private": true,
+  "devDependencies": {
+    "@types/lodash": "4.14.202",
+    "@types/node": "20.10.1",
+    "@typescript-eslint/eslint-plugin": "6.13.1",
+    "@typescript-eslint/parser": "6.13.1",
+    "eslint": "8.54.0",
+    "eslint-config-prettier": "9.0.0",
+    "prettier": "3.1.0",
+    "rimraf": "5.0.5",
+    "ts-node": "10.9.1",
+    "typescript": "5.3.2"
+  },
+  "dependencies": {
+    "lodash": "4.17.21",
+    "z3-solver": "4.12.4"
+  }
+}
