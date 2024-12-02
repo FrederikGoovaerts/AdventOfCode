@@ -1,0 +1,27 @@
+{
+  "name": "adventofcode2024",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "rimraf src/**/*.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "build": "npm run clean && tsc"
+  },
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@types/lodash": "4.17.13",
+    "@types/node": "^20",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "9.1.0",
+    "prettier": "3.4.1",
+    "rimraf": "6.0.1",
+    "ts-node": "10.9.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.16.0"
+  },
+  "dependencies": {
+    "lodash": "4.17.21"
+  }
+}
