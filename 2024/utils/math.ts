@@ -14,3 +14,7 @@ export function multipleLcm(numbers: number[]): number {
 
   return result;
 }
+
+export function numSort(a: number, b: number): number {
+  return a - b;
+}
