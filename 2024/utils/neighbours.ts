@@ -13,6 +13,19 @@ export function reverseDirection(dir: Direction): Direction {
   }
 }
 
+export function turnClockwise(dir: Direction): Direction {
+  switch (dir) {
+    case "up":
+      return "right";
+    case "down":
+      return "left";
+    case "left":
+      return "up";
+    case "right":
+      return "down";
+  }
+}
+
 export function getNeighbours<T = number>(
   x: number,
   y: number,
@@ -22,6 +35,16 @@ export function getNeighbours<T = number>(
   return getNeighboursLocs(x, y, field, diagonally).map(
     (val) => field[val.y][val.x]
   );
+}
+
+export function getDirectionNeighbourLoc(
+  x: number,
+  y: number,
+  field: unknown[][],
+  direction: Direction
+): { x: number; y: number } | undefined {
+  const directions = getDirectionNeighboursLocs(x, y, field);
+  return directions[direction];
 }
 
 export function getDirectionNeighboursLocs(
