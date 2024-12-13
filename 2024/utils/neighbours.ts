@@ -26,6 +26,19 @@ export function turnClockwise(dir: Direction): Direction {
   }
 }
 
+export function turnCounterclockwise(dir: Direction): Direction {
+  switch (dir) {
+    case "up":
+      return "left";
+    case "down":
+      return "right";
+    case "left":
+      return "down";
+    case "right":
+      return "up";
+  }
+}
+
 export function getNeighbours<T = number>(
   x: number,
   y: number,
