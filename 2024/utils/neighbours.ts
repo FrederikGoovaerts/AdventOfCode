@@ -1,5 +1,18 @@
 export type Direction = "up" | "down" | "left" | "right";
 
+export function getDirectionStep(dir: Direction): { x: number; y: number } {
+  switch (dir) {
+    case "up":
+      return { x: 0, y: -1 };
+    case "down":
+      return { x: 0, y: 1 };
+    case "left":
+      return { x: -1, y: 0 };
+    case "right":
+      return { x: 1, y: 0 };
+  }
+}
+
 export function reverseDirection(dir: Direction): Direction {
   switch (dir) {
     case "up":
