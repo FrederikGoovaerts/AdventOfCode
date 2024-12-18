@@ -9,7 +9,7 @@ function getHeadScore(y: number, x: number, val: number): number {
     return 1;
   }
 
-  const ns = getNeighboursLocs(x, y, input, false);
+  const ns = getNeighboursLocs(x, y, input[0].length - 1, input.length - 1);
 
   let score = 0;
 
@@ -32,7 +32,7 @@ function checkHeads(
     return;
   }
 
-  const ns = getNeighboursLocs(x, y, input, false);
+  const ns = getNeighboursLocs(x, y, input[0].length - 1, input.length - 1);
 
   for (const n of ns) {
     if (input[n.y][n.x] === val + 1) {

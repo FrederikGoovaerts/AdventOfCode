@@ -21,9 +21,12 @@ function getPlotFor(startY: number, startX: number): Location[] {
 
   while (toHandle.length > 0) {
     const curr = toHandle.pop()!;
-    const neighbours = getNeighboursLocs(curr.x, curr.y, input, false).filter(
-      (loc) => !seen.has(`${loc.y}|${loc.x}`)
-    );
+    const neighbours = getNeighboursLocs(
+      curr.x,
+      curr.y,
+      input[0].length - 1,
+      input.length - 1
+    ).filter((loc) => !seen.has(`${loc.y}|${loc.x}`));
 
     for (const n of neighbours) {
       if (input[n.y][n.x] === val) {
@@ -105,7 +108,12 @@ for (let y = 0; y < input.length; y++) {
 
       for (const l of plot) {
         handledSquares.add(`${l.y}|${l.x}`);
-        const neighbours = getNeighboursLocs(l.x, l.y, input, false);
+        const neighbours = getNeighboursLocs(
+          l.x,
+          l.y,
+          input[0].length - 1,
+          input.length - 1
+        );
         fences += 4 - neighbours.length;
 
         for (const n of neighbours) {

@@ -58,7 +58,7 @@ export function getNeighbours<T = number>(
   field: T[][],
   diagonally = true
 ): T[] {
-  return getNeighboursLocs(x, y, field, diagonally).map(
+  return getNeighboursLocs(x, y, field[0].length, field.length, diagonally).map(
     (val) => field[val.y][val.x]
   );
 }
@@ -103,8 +103,9 @@ export function getDirectionNeighboursLocs(
 export function getNeighboursLocs(
   x: number,
   y: number,
-  field: unknown[][],
-  diagonally = true
+  maxX: number,
+  maxY: number,
+  diagonally = false
 ): { x: number; y: number }[] {
   const result: { x: number; y: number }[] = diagonally
     ? [
@@ -124,5 +125,7 @@ export function getNeighboursLocs(
         { x: x, y: y - 1 },
       ];
 
-  return result.filter((val) => field[val.y]?.[val.x] !== undefined);
+  return result.filter(
+    (val) => val.x >= 0 && val.x <= maxX && val.y >= 0 && val.y <= maxY
+  );
 }
