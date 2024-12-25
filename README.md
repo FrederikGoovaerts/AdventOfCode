@@ -12,5 +12,6 @@ Each year is self-contained in a subfolder of the repository with instructions o
 | 2021    | TypeScript 4.5 with NodeJS 16       |
 | 2022    | Golang 1.19                         |
 | 2023    | TypeScript 5.3 with NodeJS 18       |
+| 2024    | TypeScript 5.7 with NodeJS 20       |
 
 Entries marked with a star have been solved after the competition for that year has ended.
