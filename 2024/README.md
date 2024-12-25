@@ -1,6 +1,6 @@
-# 2023 solutions
+# 2024 solutions
 
-Solutions for the 2023 edition, written in TypeScript.
+Solutions for the 2024 edition, written in TypeScript.
 
 ## Running the solutions
 
